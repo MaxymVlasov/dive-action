@@ -68,7 +68,7 @@ async function run(): Promise<void> {
       )
     }
 
-    let parameters = ['run', ...commandOptions, diveImage, image]
+    const parameters = ['run', ...commandOptions, diveImage, image]
     if (fs.existsSync(configFile)) {
       parameters.push(
         '--ci-config',
