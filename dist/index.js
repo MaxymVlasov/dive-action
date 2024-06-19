@@ -89,13 +89,13 @@ function run() {
         try {
             const image = core.getInput('image');
             const configFile = core.getInput('config-file');
-            const diveImage = 'wagoodman/dive:v0.10';
+            const diveImage = 'wagoodman/dive:v0.12';
             yield exec.exec('docker', ['pull', diveImage]);
             const commandOptions = [
                 '-e',
                 'CI=true',
                 '-e',
-                'DOCKER_API_VERSION=1.37',
+                'DOCKER_API_VERSION=1.45',
                 '--rm',
                 '-v',
                 '/var/run/docker.sock:/var/run/docker.sock'
