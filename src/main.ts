@@ -55,7 +55,7 @@ async function run(): Promise<void> {
       '-e',
       'CI=true',
       '-e',
-      'DOCKER_API_VERSION=1.37',
+      'DOCKER_API_VERSION=1.45',
       '--rm',
       '-v',
       '/var/run/docker.sock:/var/run/docker.sock'
