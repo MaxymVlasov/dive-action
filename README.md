@@ -36,7 +36,7 @@ jobs:
       - name: Build image
         run: docker build -t sample:latest .
       - name: Dive
-        uses: MaxymVlasov/dive-action@1.0.0
+        uses: MaxymVlasov/dive-action@v1.0.1
         with:
           image: "sample:latest"
           config-file: ${{ github.workspace }}/.dive-ci.yml
