@@ -64,16 +64,13 @@ async function run(): Promise<void> {
     if (fs.existsSync(configFile)) {
       commandOptions.push(
         '--mount',
-        `type=bind,source=${configFile},target=/.dive-ci`,
+        `type=bind,source=${configFile},target=/.dive-ci`
       )
     }
 
     const parameters = ['run', ...commandOptions, diveImage, image]
     if (fs.existsSync(configFile)) {
-      parameters.push(
-        '--ci-config',
-        '/.dive-ci'
-      )
+      parameters.push('--ci-config', '/.dive-ci')
     }
     let output = ''
     const execOptions = {
@@ -106,7 +103,7 @@ async function run(): Promise<void> {
     await octokit.issues.createComment(comment)
     core.setFailed(`Scan failed (exit code: ${exitCode})`)
   } catch (error) {
-    core.setFailed(error)
+    core.setFailed(error instanceof Error ? error.message : String(error))
   }
 }
 
