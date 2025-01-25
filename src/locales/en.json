@@ -1,0 +1,12 @@
+{
+  "inefficientFiles": "**The container image has inefficient files.**",
+  "summary": "### Summary",
+  "inefficientFilesSection": "### Inefficient Files",
+  "results": "### Results",
+  "countHeader": "| Count | Wasted Space | File Path |",
+  "analyzingImage": "Analyzing image",
+  "inefficientFilesHeader": "Inefficient Files:",
+  "resultsHeader": "Results:",
+  "countHeaderPrefix": "Count",
+  "scanFailed": "Scan failed"
+}

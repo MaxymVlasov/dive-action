@@ -57,37 +57,37 @@ const exec = __importStar(__nccwpck_require__(5236));
 const github = __importStar(__nccwpck_require__(3228));
 const strip_ansi_1 = __importDefault(__nccwpck_require__(348));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
+const en = __importStar(__nccwpck_require__(4349));
 function format(output) {
-    const ret = ['**The container image has inefficient files.**'];
+    const ret = [en.inefficientFiles];
     let summarySection = false;
     let inefficientFilesSection = false;
     let resultSection = false;
     for (const line of output.split('\n')) {
-        if (line.includes('Analyzing image')) {
+        if (line.includes(en.analyzingImage)) {
             summarySection = true;
             inefficientFilesSection = false;
             resultSection = false;
-            ret.push('### Summary');
+            ret.push(en.summary);
         }
-        else if (line.includes('Inefficient Files:')) {
+        else if (line.includes(en.inefficientFilesHeader)) {
             summarySection = false;
             inefficientFilesSection = true;
             resultSection = false;
-            ret.push('### Inefficient Files');
+            ret.push(en.inefficientFilesSection);
         }
-        else if (line.includes('Results:')) {
+        else if (line.includes(en.resultsHeader)) {
             summarySection = false;
             inefficientFilesSection = false;
             resultSection = true;
-            ret.push('### Results');
+            ret.push(en.results);
         }
         else if (summarySection || resultSection) {
             ret.push((0, strip_ansi_1.default)(line));
         }
         else if (inefficientFilesSection) {
-            if (line.startsWith('Count')) {
-                ret.push('| Count | Wasted Space | File Path |');
-                ret.push('|---|---|---|');
+            if (line.startsWith(en.countHeaderPrefix)) {
+                ret.push(en.countHeader);
             }
             else {
                 // https://github.com/wagoodman/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
@@ -144,7 +144,7 @@ function run() {
             const octokit = github.getOctokit(token);
             const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: format(output) });
             yield octokit.rest.issues.createComment(comment);
-            core.setFailed(`Scan failed (exit code: ${exitCode})`);
+            core.setFailed(`${en.scanFailed} (exit code: ${exitCode})`);
         }
         catch (error) {
             core.setFailed(error instanceof Error ? error.message : String(error));
@@ -31988,6 +31988,14 @@ function stripAnsi(string) {
 	return string.replace(regex, '');
 }
 
+
+/***/ }),
+
+/***/ 4349:
+/***/ ((module) => {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"inefficientFiles":"**The container image has inefficient files.**","summary":"### Summary","inefficientFilesSection":"### Inefficient Files","results":"### Results","countHeader":"| Count | Wasted Space | File Path |","analyzingImage":"Analyzing image","inefficientFilesHeader":"Inefficient Files:","resultsHeader":"Results:","countHeaderPrefix":"Count","scanFailed":"Scan failed"}');
 
 /***/ })
 
