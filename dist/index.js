@@ -73,7 +73,7 @@ function format(output) {
         }
         else if (inefficientFilesSection) {
             if (line.startsWith('Count')) {
-                ret.push('| Count | Wasted Space | File Paht |');
+                ret.push('| Count | Wasted Space | File Path |');
                 ret.push('|---|---|---|');
             }
             else {
