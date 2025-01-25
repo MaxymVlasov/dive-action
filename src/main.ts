@@ -100,7 +100,7 @@ async function run(): Promise<void> {
       issue_number: github.context.issue.number,
       body: format(output)
     }
-    await octokit.issues.createComment(comment)
+    await octokit.rest.issues.createComment(comment)
     core.setFailed(`Scan failed (exit code: ${exitCode})`)
   } catch (error) {
     core.setFailed(error instanceof Error ? error.message : String(error))
