@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yuichielectric/dive-action.git"
+    "url": "git+https://github.com/MaxymVlasov/dive-action.git"
   },
   "keywords": [
     "actions",
@@ -23,11 +23,16 @@
     "docker"
   ],
   "author": "yuichielectric",
+  "maintainers": [
+    {
+      "name": "MaxymVlasov"
+    }
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yuichielectric/dive-action/issues"
+    "url": "https://github.com/MaxymVlasov/dive-action/issues"
   },
-  "homepage": "https://github.com/yuichielectric/dive-action#readme",
+  "homepage": "https://github.com/MaxymVlasov/dive-action#readme",
   "dependencies": {
     "@actions/core": "^1.10.1",
     "@actions/exec": "^1.1.1",
