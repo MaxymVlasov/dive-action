@@ -89,7 +89,7 @@ function run() {
         try {
             const image = core.getInput('image');
             const configFile = core.getInput('config-file');
-            const diveImage = 'wagoodman/dive:v0.12';
+            const diveImage = 'ghcr.io/joschi/dive:v0.13.1';
             yield exec.exec('docker', ['pull', diveImage]);
             const commandOptions = [
                 '-e',
