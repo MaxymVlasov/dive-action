@@ -88,6 +88,7 @@ function format(output) {
         else if (inefficientFilesSection) {
             if (line.startsWith(en.countHeaderPrefix)) {
                 ret.push(en.countHeader);
+                ret.push('|---|---|---|');
             }
             else {
                 // https://github.com/wagoodman/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
