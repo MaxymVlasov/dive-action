@@ -91,7 +91,7 @@ function format(output) {
                 ret.push('|---|---|---|');
             }
             else {
-                // https://github.com/wagoodman/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
+                // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
                 ret.push(`| ${line.slice(0, 5)} | ${line.slice(7, 19)} | ${line.slice(21)} |`);
             }
         }
@@ -103,7 +103,7 @@ function run() {
         try {
             const image = core.getInput('image');
             const configFile = core.getInput('config-file');
-            const diveImage = 'wagoodman/dive:v0.12';
+            const diveImage = 'ghcr.io/joschi/dive:0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17';
             yield exec.exec('docker', ['pull', diveImage]);
             const commandOptions = [
                 '-e',
