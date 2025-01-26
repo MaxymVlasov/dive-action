@@ -7,7 +7,7 @@
 !["./pr-comment.png"](pr-comment.png)
 
 
-dive action is an action that allows developers who develop Docker image to run [dive](https://github.com/wagoodman/dive) on GitHub Actions. dive is a tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image. Integrating dive into your CI will let you reduce your container image size as early as possible.
+dive action is an action that allows developers who develop Docker image to run [dive](https://github.com/joschi/dive) on GitHub Actions. dive is a tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image. Integrating dive into your CI will let you reduce your container image size as early as possible.
 
 ## **Usage**
 
@@ -16,13 +16,13 @@ dive action is an action that allows developers who develop Docker image to run 
 | Name         | Type   | Required | Default                              | Description                                                                  |
 | ------------ | ------ | -------- | ------------------------------------ | ---------------------------------------------------------------------------- |
 | image        | String | true     |                                      | Image to analyze                                                             |
-| config-file  | String | false    | `${{ github.workspace }}/.dive.yaml` | Path to [dive config file](https://github.com/wagoodman/dive#ci-integration) |
+| config-file  | String | false    | `${{ github.workspace }}/.dive.yaml` | Path to [dive config file](https://github.com/joschi/dive#ci-integration) |
 | github-token | String | false    |                                      | GitHub token to post PR comment on dive failure                              |
 
 ### Workflow
 
 ```yaml
-name: "Dive CI"
+name: Dive CI
 
 on: [pull_request]
 
@@ -36,16 +36,16 @@ jobs:
       - name: Build image
         run: docker build -t sample:latest .
       - name: Dive
-        uses: MaxymVlasov/dive-action@v1.0.1
+        uses: MaxymVlasov/dive-action@v1.1.0
         with:
-          image: "sample:latest"
+          image: sample:latest
           config-file: ${{ github.workspace }}/.dive-ci.yml
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Config file
 
-There are three metrics supported by dive config file. See [here](https://github.com/wagoodman/dive#ci-integration) for details.
+There are three metrics supported by dive config file. See [here](https://github.com/joschi/dive#ci-integration) for details.
 
 ```yaml
 rules:
@@ -66,22 +66,11 @@ rules:
 ### Output
 
 ```
-Unable to find image 'wagoodman/dive:v0.9' locally
-v0.9: Pulling from wagoodman/dive
-89d9c30c1d48: Pulling fs layer
-5ac8ae86f99b: Pulling fs layer
-f10575f61141: Pulling fs layer
-89d9c30c1d48: Verifying Checksum
-89d9c30c1d48: Download complete
-f10575f61141: Verifying Checksum
-f10575f61141: Download complete
-5ac8ae86f99b: Verifying Checksum
-5ac8ae86f99b: Download complete
-89d9c30c1d48: Pull complete
-5ac8ae86f99b: Pull complete
-f10575f61141: Pull complete
-Digest: sha256:2d3be9e9362ecdcb04bf3afdd402a785b877e3bcca3d2fc6e10a83d99ce0955f
-Status: Downloaded newer image for wagoodman/dive:v0.9
+Unable to find image 'ghcr.io/joschi/dive@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17' locally
+ghcr.io/joschi/dive@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17: Pulling from joschi/dive
+54c3c928c034: Pull complete
+Digest: sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
+Status: Downloaded newer image for ghcr.io/joschi/dive@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
   Using CI config: /.dive-ci
 Image Source: docker://sample:latest
 Fetching image... (this can take a while for large images)

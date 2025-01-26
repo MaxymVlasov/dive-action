@@ -91,7 +91,7 @@ function format(output) {
                 ret.push('|---|---|---|');
             }
             else {
-                // https://github.com/wagoodman/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
+                // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
                 ret.push(`| ${line.slice(0, 5)} | ${line.slice(7, 19)} | ${line.slice(21)} |`);
             }
         }
