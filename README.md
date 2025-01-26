@@ -122,7 +122,7 @@ Result:FAIL [Total:3] [Passed:2] [Failed:1] [Warn:0] [Skipped:0]
 
 [release]: https://github.com/maxymvlasov/dive-action/releases/latest
 [release-badge]: https://img.shields.io/github/release/maxymvlasov/dive-action.svg?logo=github&color=green
-[marketplace]: https://github.com/marketplace/actions/dive-action
-[marketplace-badge]: https://img.shields.io/badge/marketplace-dive--action-green?logo=github
+[marketplace]: https://github.com/marketplace/actions/dive-action-v2
+[marketplace-badge]: https://img.shields.io/badge/marketplace-dive--action--v2-green?logo=github
 [license]: https://github.com/maxymvlasov/dive-action/blob/master/LICENSE
 [license-badge]: https://img.shields.io/github/license/maxymvlasov/dive-action.svg
