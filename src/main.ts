@@ -3,34 +3,35 @@ import * as exec from '@actions/exec'
 import * as github from '@actions/github'
 import stripAnsi from 'strip-ansi'
 import fs from 'fs'
+import * as en from './locales/en.json'
 
 function format(output: string): string {
-  const ret = ['**The container image has inefficient files.**']
+  const ret = [en.inefficientFiles]
   let summarySection = false
   let inefficientFilesSection = false
   let resultSection = false
 
   for (const line of output.split('\n')) {
-    if (line.includes('Analyzing image')) {
+    if (line.includes(en.analyzingImage)) {
       summarySection = true
       inefficientFilesSection = false
       resultSection = false
-      ret.push('### Summary')
-    } else if (line.includes('Inefficient Files:')) {
+      ret.push(en.summary)
+    } else if (line.includes(en.inefficientFilesHeader)) {
       summarySection = false
       inefficientFilesSection = true
       resultSection = false
-      ret.push('### Inefficient Files')
-    } else if (line.includes('Results:')) {
+      ret.push(en.inefficientFilesSection)
+    } else if (line.includes(en.resultsHeader)) {
       summarySection = false
       inefficientFilesSection = false
       resultSection = true
-      ret.push('### Results')
+      ret.push(en.results)
     } else if (summarySection || resultSection) {
       ret.push(stripAnsi(line))
     } else if (inefficientFilesSection) {
-      if (line.startsWith('Count')) {
-        ret.push('| Count | Wasted Space | File Path |')
+      if (line.startsWith(en.countHeaderPrefix)) {
+        ret.push(en.countHeader)
         ret.push('|---|---|---|')
       } else {
         // https://github.com/wagoodman/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
@@ -102,7 +103,7 @@ async function run(): Promise<void> {
       body: format(output)
     }
     await octokit.rest.issues.createComment(comment)
-    core.setFailed(`Scan failed (exit code: ${exitCode})`)
+    core.setFailed(`${en.scanFailed} (exit code: ${exitCode})`)
   } catch (error) {
     core.setFailed(error instanceof Error ? error.message : String(error))
   }
