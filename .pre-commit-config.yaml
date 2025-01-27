@@ -38,6 +38,17 @@ repos:
     - --allow-missing-credentials
   - id: detect-private-key
 
+  # JSON
+  - id: check-json  # checks json files for parseable syntax.
+  - id: pretty-format-json  # sets a standard for formatting .tf.json files.
+    args:
+    - --autofix
+    - --no-sort-keys
+
+  # Symlinks
+  - id: check-symlinks  # checks for symlinks which do not point to anything.
+  - id: destroyed-symlinks  # detects symlinks which are changed to regular files
+  # with a content of a path which that symlink was pointing to.
 
 # JSON5 Linter
 - repo: https://github.com/pre-commit/mirrors-prettier
