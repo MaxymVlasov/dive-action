@@ -16,14 +16,14 @@ on:
       - '**.md'
   workflow_dispatch:
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
 jobs:
   check-dist:
-    permissions:
-      # for actions/upload-artifact to upload the expected dist/ directory
-      contents: write
+    # permissions:
+    #   # for actions/upload-artifact to upload the expected dist/ directory
+    #   contents: write
 
     runs-on: ubuntu-latest
 
