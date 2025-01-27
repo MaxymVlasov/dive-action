@@ -100,4 +100,5 @@ repos:
         name: Validate Coderabbit AI settings
         files: ^\.coderabbit\.yaml$
         args:
-          - --schemafile=https://coderabbit.ai/integrations/schema.v2.json
+          # pre-commit.ci can't download the schema file from the internet
+          - --schemafile=.coderabbit-schema.v2.json
