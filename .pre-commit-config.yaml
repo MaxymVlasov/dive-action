@@ -10,7 +10,6 @@ repos:
   hooks:
     # Git style
     - id: check-added-large-files
-    - id: check-merge-conflict
     - id: check-vcs-permalinks
     - id: forbid-new-submodules
     - id: no-commit-to-branch

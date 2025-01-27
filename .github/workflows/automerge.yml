@@ -17,12 +17,23 @@ on:
     types:
       - completed
   status: {}
+
+permissions:
+  contents: read
+
 jobs:
   automerge:
+    permissions:
+      # for pascalgn/automerge-action to be able to merge PRs
+      contents: write
+      # for pascalgn/automerge-action. TODO: Not sure why it's needed.
+      # It's comes from GHA README.
+      pull-requests: write
+
     runs-on: ubuntu-latest
     steps:
       - name: automerge
-        uses: "pascalgn/automerge-action@7961b8b5eec56cc088c140b56d864285eabd3f67" # v0.16.4
+        uses: pascalgn/automerge-action@7961b8b5eec56cc088c140b56d864285eabd3f67 # v0.16.4
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          MERGE_LABELS: "dependencies"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_LABELS: auto-update

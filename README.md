@@ -24,10 +24,17 @@ dive action is an action that allows developers who develop Docker image to run 
 ```yaml
 name: Dive CI
 
-on: [pull_request]
+on:
+ pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   dive:
+    permissions:
+      # for MaxymVlasov/dive-action to write comments to PRs
+      pull-requests: write
     runs-on: ubuntu-latest
     name: Analyze image efficiency
     steps:
@@ -43,9 +50,14 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+For security reasons, I recommend pinning GitHub Action SHAs. You can use
+[Renovate](https://docs.renovatebot.com/) for this. The simplest way to start
+is by using [this preset](https://github.com/SpotOnInc/renovate-config/) that I
+created.
+
 ### Config file
 
-There are three metrics supported by dive config file. See [here](https://github.com/joschi/dive#ci-integration) for details.
+There are three metrics supported by the dive config file. See [here](https://github.com/joschi/dive#ci-integration) for details.
 
 ```yaml
 rules:
@@ -65,12 +77,15 @@ rules:
 
 ### Output
 
-```
-Unable to find image 'ghcr.io/joschi/dive@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17' locally
+```txt
 ghcr.io/joschi/dive@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17: Pulling from joschi/dive
+54c3c928c034: Pulling fs layer
+54c3c928c034: Verifying Checksum
+54c3c928c034: Download complete
 54c3c928c034: Pull complete
 Digest: sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
 Status: Downloaded newer image for ghcr.io/joschi/dive@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
+ghcr.io/joschi/dive:0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
   Using CI config: /.dive-ci
 Image Source: docker://sample:latest
 Fetching image... (this can take a while for large images)
@@ -105,12 +120,6 @@ Count  Wasted Space  File Path
     5           0 B  /var/lib/apt/lists
     3           0 B  /var/lib/dpkg/triggers/Unincorp
     6           0 B  /var/lib/dpkg/updates
-    5           0 B  /var/cache/apt/archives/lock
-    6           0 B  /var/cache/debconf/passwords.dat
-    5           0 B  /var/cache/apt/archives/partial
-    2           0 B  /etc/.pwd.lock
-    6           0 B  /tmp
-    6           0 B  /var/lib/dpkg/triggers/Lock
 Results:
   PASS: highestUserWastedPercent
   PASS: highestWastedBytes

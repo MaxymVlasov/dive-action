@@ -63,7 +63,8 @@ async function run(): Promise<void> {
       '/var/run/docker.sock:/var/run/docker.sock'
     ]
 
-    if (fs.existsSync(configFile)) {
+    const hasConfigFile = fs.existsSync(configFile)
+    if (hasConfigFile) {
       commandOptions.push(
         '--mount',
         `type=bind,source=${configFile},target=/.dive-ci`
@@ -71,7 +72,7 @@ async function run(): Promise<void> {
     }
 
     const parameters = ['run', ...commandOptions, diveImage, image]
-    if (fs.existsSync(configFile)) {
+    if (hasConfigFile) {
       parameters.push('--ci-config', '/.dive-ci')
     }
     let output = ''
