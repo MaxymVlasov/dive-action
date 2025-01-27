@@ -1,20 +1,20 @@
-name: "Dive Action v2"
-description: "Run Dive to analyze the container image efficiency"
-author: "@MaxymVlasov"
+name: Dive Action v2
+description: Run Dive to analyze the container image efficiency
+author: '@MaxymVlasov'
 branding:
-  icon: "aperture"
-  color: "green"
+  icon: aperture
+  color: green
 inputs:
   image:
-    description: "Image to analyze"
+    description: Image to analyze
     required: true
   config-file:
-    description: "Path to dive config file"
+    description: Path to dive config file
     required: false
     default: ${{ github.workspace }}/.dive.yaml
   github-token:
-    description: "GitHub Token to post PR comment"
+    description: GitHub Token to post PR comment
     required: true
 runs:
-  using: "node20"
-  main: "dist/index.js"
+  using: node20
+  main: dist/index.js
