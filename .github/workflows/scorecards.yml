@@ -38,13 +38,11 @@ jobs:
 
     steps:
     - name: Checkout code
-      # yamllint disable-line rule:line-length
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
       with:
         persist-credentials: false
 
     - name: Run analysis
-      # yamllint disable-line rule:line-length
       uses: ossf/scorecard-action@dc50aa9510b46c811795eb24b2f1ba02a914e534  # v2.3.3
       with:
         results_file: results.sarif
@@ -69,7 +67,6 @@ jobs:
     # Upload the results as artifacts (optional). Commenting out will disable
     # uploads of run results in SARIF format to the repository Actions tab.
     - name: Upload artifact
-      # yamllint disable-line rule:line-length
       uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08  # v4.6.0
       with:
         name: SARIF file
@@ -78,7 +75,6 @@ jobs:
 
     # Upload the results to GitHub's code scanning dashboard.
     - name: Upload to code-scanning
-      # yamllint disable-line rule:line-length
       uses: github/codeql-action/upload-sarif@ee117c905ab18f32fa0f66c2fe40ecc8013f3e04  # v3.28.4
       with:
         sarif_file: results.sarif

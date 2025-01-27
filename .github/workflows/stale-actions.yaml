@@ -25,15 +25,11 @@ jobs:
         stale-issue-message: >
           This issue has been automatically marked as stale because it has been
           open 30 days
-
-
           with no activity. Remove stale label or comment or this issue will be
           closed in 10 days
         stale-pr-message: >
           This PR has been automatically marked as stale because it has been
           open 30 days
-
-
           with no activity. Remove stale label or comment or this PR will be
           closed in 10 days
         # Not stale if have this labels or part of milestone
