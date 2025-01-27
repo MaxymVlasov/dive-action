@@ -3,19 +3,25 @@
 #
 # You may wish to alter this file to override the set of languages analyzed,
 # or to provide custom queries or build logic.
-name: "CodeQL"
+name: CodeQL
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [main]
   schedule:
-    - cron: '0 21 * * 1'
+    - cron: 0 21 * * 1
+
+permissions:
+  contents: read
 
 jobs:
   analyze:
+    permissions:
+      actions: read
+      security-events: write
+
     name: Analyze
     runs-on: ubuntu-latest
 
@@ -24,7 +30,8 @@ jobs:
       matrix:
         # Override automatic language detection by changing the below list
         # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
-        language: ['javascript']
+        language:
+          - javascript
         # Learn more...
         # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
 
