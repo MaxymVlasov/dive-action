@@ -57,7 +57,7 @@ created.
 
 ### Config file
 
-There are three metrics supported by dive config file. See [here](https://github.com/joschi/dive#ci-integration) for details.
+There are three metrics supported by the dive config file. See [here](https://github.com/joschi/dive#ci-integration) for details.
 
 ```yaml
 rules:
