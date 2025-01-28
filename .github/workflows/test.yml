@@ -35,6 +35,9 @@ jobs:
           # Install Podman
           sudo apt-get update
           sudo apt-get -y install podman
+          # Test Docker & Podman existence
+          docker --version
+          podman --version
           # Copy the test image to the local Podman storage
           docker save ${{ env.SUCCESS_IMAGE }} | podman load
 
