@@ -119,5 +119,10 @@ repos:
           && npm run all
           '
         language: system
-        files: ^src/|^package\.json$
+        files: |
+          (?x)
+            (^src/
+            |^package\.json$
+            |^tsconfig\.json$
+          )
         verbose: true
