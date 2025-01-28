@@ -44,6 +44,21 @@ function format(output: string): string {
   return ret.join('\n')
 }
 
+/**
+ * Executes a Docker image analysis using the dive tool and handles the results.
+ *
+ * @remarks
+ * This async function performs the following key steps:
+ * - Pulls the specified dive tool Docker image
+ * - Runs dive analysis on a target Docker image
+ * - Handles different exit scenarios, including posting comments on GitHub issues
+ *
+ * @throws {Error} Fails the GitHub Action if analysis encounters issues or lacks required configuration
+ *
+ * @returns A promise that resolves when the analysis is complete
+ *
+ * @beta
+ */
 async function run(): Promise<void> {
   try {
     const image = core.getInput('image')
