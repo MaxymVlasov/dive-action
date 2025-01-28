@@ -134,8 +134,8 @@ function run() {
                 'https://github.com/joschi/dive/releases/download/v0.14.0/dive_0.14.0_linux_amd64.deb'
             ]);
             yield exec.exec('sudo', [
-                'apt',
-                'install',
+                'dpkg',
+                '-i',
                 './dive_0.14.0_linux_amd64.deb',
                 '-y'
             ]);

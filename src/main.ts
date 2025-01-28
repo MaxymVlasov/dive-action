@@ -84,8 +84,8 @@ async function run(): Promise<void> {
     ])
 
     await exec.exec('sudo', [
-      'apt',
-      'install',
+      'dpkg',
+      '-i',
       './dive_0.14.0_linux_amd64.deb',
       '-y'
     ])
