@@ -59,7 +59,7 @@ jobs:
         if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
-          image: localhost:latest
+          image: localhost/latest:latest
           image-source: podman
 
       - name: 'Params: config-file'
