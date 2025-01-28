@@ -41,11 +41,13 @@ jobs:
           # Copy the test image to the local Podman storage
           docker save ${{ env.SUCCESS_IMAGE }} | podman load
           # Verify the test image is available in Podman
+          echo "Podman images:"
           podman images
+          # Add Podman to PATH
+          which podman
+          echo "$(which podman)" >> $GITHUB_PATH
+          echo "/usr/bin" >> $GITHUB_PATH
 
-      - run: |
-          docker images
-          podman images
 
       - name: 'Params: required only with no defaults'
         if: always() && steps.pre-setup.outcome == 'success'
