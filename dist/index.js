@@ -114,11 +114,12 @@ function run() {
                 '-v',
                 '/var/run/docker.sock:/var/run/docker.sock'
             ];
-            if (fs_1.default.existsSync(configFile)) {
+            const hasConfigFile = fs_1.default.existsSync(configFile);
+            if (hasConfigFile) {
                 commandOptions.push('--mount', `type=bind,source=${configFile},target=/.dive-ci`);
             }
             const parameters = ['run', ...commandOptions, diveImage, image];
-            if (fs_1.default.existsSync(configFile)) {
+            if (hasConfigFile) {
                 parameters.push('--ci-config', '/.dive-ci');
             }
             let output = '';
@@ -32012,7 +32013,7 @@ function stripAnsi(string) {
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"inefficientFiles":"**The container image has inefficient files.**","summary":"### Summary","inefficientFilesSection":"### Inefficient Files","results":"### Results","countHeader":"| Count | Wasted Space | File Path |","analyzingImage":"Analyzing image","inefficientFilesHeader":"Inefficient Files:","resultsHeader":"Results:","countHeaderPrefix":"Count","scanFailed":"Scan failed"}');
+module.exports = /*#__PURE__*/JSON.parse('{"analyzingImage":"Analyzing image","countHeader":"| Count | Wasted Space | File Path |","countHeaderPrefix":"Count","inefficientFiles":"**The container image has inefficient files.**","inefficientFilesHeader":"Inefficient Files:","inefficientFilesSection":"### Inefficient Files","results":"### Results","resultsHeader":"Results:","scanFailed":"Scan failed","summary":"### Summary"}');
 
 /***/ })
 
