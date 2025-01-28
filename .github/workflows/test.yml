@@ -64,34 +64,78 @@ jobs:
 
       # Verifies that the action properly handles and reports errors
       # when trying to analyze a non-existent Docker image
-      - name: 'Negative test: Invalid image name'
+      - name: '[Run] Negative test: Invalid image name'
         if: always() && steps.pre-setup.outcome == 'success'
         continue-on-error: true
         uses: ./
         with:
           image: invalid/image:latest
+
+      - name: '[Verification] Negative test: Invalid image name'
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-image.outputs.error }}"
+          expected_message="Scan failed (exit code: 1)."
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-image.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
       # Tests error handling when the specified dive configuration file doesn't exist
-      - name: 'Negative test: Non-existent config file'
+      - name: '[Run] Negative test: Non-existent config file'
         if: always() && steps.pre-setup.outcome == 'success'
         continue-on-error: true
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           config-file: /non/existent/path.yaml
-      # Ensures proper error reporting when an unsupported container
-      # runtime (not docker/podman) is specified
-      - name: 'Negative test: Invalid image source'
+
+      - name: '[Verification] Negative test: Non-existent config file'
         if: always() && steps.pre-setup.outcome == 'success'
-        continue-on-error: true
-        uses: ./
-        with:
-          image: ${{ env.SUCCESS_IMAGE }}
-          image-source: invalid-source
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-config.outputs.error }}"
+          expected_message="Config file not found in the specified path '/non/existent/path.yaml'"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-config.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
       # Validates that the action correctly enforces the required image
-      # input parameter
-      - name: 'Negative test: Missing required image parameter'
+      # input parameter. Note, that it has no access to post a comment
+      - name: '[Run] Negative test: Missing required image parameter'
         if: always() && steps.pre-setup.outcome == 'success'
         continue-on-error: true
         uses: ./
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: '[Verification] Negative test: Missing required image parameter'
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.missing-required.outputs.error }}"
+          expected_message="Resource not accessible by integration - \
+          https://docs.github.com/rest/issues/comments#create-an-issue-comment"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.missing-required.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi

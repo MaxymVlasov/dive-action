@@ -168,14 +168,14 @@ function run() {
             }
             const token = core.getInput('github-token');
             if (!token) {
-                core.setFailed(`Scan failed (exit code: ${exitCode}). To post scan results ` +
+                core.setFailed(`Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
                     'as a PR comment, please provide the github-token in the action inputs.');
                 return;
             }
             const octokit = github.getOctokit(token);
             const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: format(output) });
             yield octokit.rest.issues.createComment(comment);
-            core.setFailed(`Scan faile (exit code: ${exitCode})`);
+            core.setFailed(`Scan failed (exit code: ${exitCode})`);
         }
         catch (error) {
             core.setFailed(error instanceof Error ? error.message : String(error));
