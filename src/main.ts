@@ -49,8 +49,9 @@ async function run(): Promise<void> {
     const image = core.getInput('image')
     const configFile = core.getInput('config-file')
 
-    const diveImage =
-      'ghcr.io/joschi/dive:0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17'
+    const diveRepo = core.getInput('dive-image-registry')
+    const diveVersion = core.getInput('dive-image-version')
+    const diveImage = `${diveRepo}:${diveVersion}`
     await exec.exec('docker', ['pull', diveImage])
 
     const commandOptions = [

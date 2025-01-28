@@ -14,7 +14,16 @@ inputs:
     default: ${{ github.workspace }}/.dive.yaml
   github-token:
     description: GitHub Token to post PR comment
-    required: true
+    required: false
+  dive-image-registry:
+    description: Docker registry to pull the Dive image from
+    required: false
+    default: ghcr.io/joschi/dive
+  dive-image-version:
+    description: Version of the Dive docker image to use. You can use 'latest' if you want
+    required: false
+    default: 0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
+
 runs:
   using: node20
   main: dist/index.js

@@ -14,6 +14,7 @@ repos:
       # Git style
       - id: check-added-large-files
       - id: check-vcs-permalinks
+        exclude: ^.git/COMMIT_EDITMSG$
       - id: forbid-new-submodules
       - id: no-commit-to-branch
 
@@ -102,3 +103,11 @@ repos:
         args:
           # pre-commit.ci can't download the schema file from the internet
           - --schemafile=.coderabbit-schema.v2.json
+
+  - repo: local
+    hooks:
+      - id: npm-install-and-run-all
+        name: Run tests and regenerate the dist/ directory
+        entry: bash -c 'npm install && npm run all'
+        language: system
+        files: ^src/
