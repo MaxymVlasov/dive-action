@@ -162,6 +162,7 @@ function run() {
             }
             const token = core.getInput('github-token');
             if (!token) {
+                core.setFailed(`${en.scanFailed} (exit code: ${exitCode})`);
                 return;
             }
             const octokit = github.getOctokit(token);
