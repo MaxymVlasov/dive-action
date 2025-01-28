@@ -1,0 +1,87 @@
+# `dist/index.js` is a special file in Actions.
+# When you reference an action with `uses:` in a workflow,
+# `index.js` is the code that will run.
+# For our project, we generate this file through a build process from other source files.
+# We need to make sure the checked-in `index.js` actually matches what we expect it to be.
+name: Check `dist/`
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - docs/**
+      - CHANGELOG*
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - docs/**
+      - CHANGELOG*
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-dist:
+    permissions:
+      # for EndBug/add-and-commit to back-push the expected dist/ directory
+      contents: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          # Ensure successful push of fixes
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          # Need to trigger workflows on autofix commit
+          # Guide: # yamllint disable-line rule:line-length
+          # https://web.archive.org/web/20210731173012/https://github.community/t/required-check-is-expected-after-automated-push/187545/
+          ssh-key: ${{ secrets.GHA_AUTOFIX_COMMIT_KEY }}
+
+      - name: Set Node.js 20
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a  # v4.2.0
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Rebuild the dist/ directory
+        run: >-
+          npm run all
+
+      - name: Compare the expected and actual dist/ directories
+        id: diff
+        run: |
+          if ! git diff --exit-code dist/; then
+            echo "Detected uncommitted changes after build. "
+            echo "This usually means that the dist/ directory was not rebuilt before committing."
+
+            echo "To fix this next time:"
+            echo "1. Run 'npm install && npm run all' locally"
+            echo "2. Commit any changes to the dist/ directory"
+            echo "3. Push your changes"
+            git diff --text
+
+            exit 1
+          fi
+
+      - name: Push fixes
+        if: failure()
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5  # v9.1.4
+        with:
+          # Determines the way the action fills missing author name and email.
+          # Three options are available:
+          # - github_actor -> UserName <UserName@users.noreply.github.com>
+          # - user_info -> Your Display Name <your-actual@email.com>
+          # - github_actions -> github-actions <email associated with the github logo>
+          # Default: github_actor
+          default_author: github_actor
+          # The message for the commit.
+          # Default: 'Commit from GitHub Actions (name of the workflow)'
+          message: '[CI] Autoupdate `dist/` directory'
