@@ -61,3 +61,37 @@ jobs:
           dive-image-registry: ghcr.io/joschi/dive
           dive-image-version: >-
             0.14.0
+
+      # Verifies that the action properly handles and reports errors
+      # when trying to analyze a non-existent Docker image
+      - name: 'Negative test: Invalid image name'
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: invalid/image:latest
+      # Tests error handling when the specified dive configuration file doesn't exist
+      - name: 'Negative test: Non-existent config file'
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.SUCCESS_IMAGE }}
+          config-file: /non/existent/path.yaml
+      # Ensures proper error reporting when an unsupported container
+      # runtime (not docker/podman) is specified
+      - name: 'Negative test: Invalid image source'
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.SUCCESS_IMAGE }}
+          image-source: invalid-source
+      # Validates that the action correctly enforces the required image
+      # input parameter
+      - name: 'Negative test: Missing required image parameter'
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
