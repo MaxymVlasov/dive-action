@@ -16,14 +16,14 @@ on:
       - '**.md'
   workflow_dispatch:
 
-# permissions:
-#   contents: read
+permissions:
+  contents: read
 
 jobs:
   check-dist:
-    # permissions:
-    #   # for actions/upload-artifact to upload the expected dist/ directory
-    #   contents: write
+    permissions:
+      # for actions/upload-artifact to upload the expected dist/ directory
+      contents: write
 
     runs-on: ubuntu-latest
 
@@ -34,7 +34,10 @@ jobs:
           # Ensure successful push of fixes
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
-
+          # Need to trigger workflows on autofix commit
+          # Guide: # yamllint disable-line rule:line-length
+          # https://web.archive.org/web/20210731173012/https://github.community/t/required-check-is-expected-after-automated-push/187545/
+          ssh-key: ${{ secrets.GHA_AUTOFIX_COMMIT_KEY }}
 
       - name: Set Node.js 20
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a  # v4.2.0
