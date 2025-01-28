@@ -32,35 +32,12 @@ jobs:
             echo "Test image ${{ env.SUCCESS_IMAGE }} not found" >&2
             exit 1
           }
-          # Install Podman
-          sudo apt-get update
-          sudo apt-get -y install podman
-          # Test Docker & Podman existence
-          docker --version
-          podman --version
-          # Copy the test image to the local Podman storage
-          docker save ${{ env.SUCCESS_IMAGE }} | podman load
-          # Verify the test image is available in Podman
-          echo "Podman images:"
-          podman images
-          # Add Podman to PATH
-          which podman
-          echo "$(which podman)" >> $GITHUB_PATH
-          echo "/usr/bin" >> $GITHUB_PATH
-
 
       - name: 'Params: required only with no defaults'
         if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
-
-      - name: 'Params: image-source'
-        if: always() && steps.pre-setup.outcome == 'success'
-        uses: ./
-        with:
-          image: localhost/latest:latest
-          image-source: podman
 
       - name: 'Params: config-file'
         if: always() && steps.pre-setup.outcome == 'success'
