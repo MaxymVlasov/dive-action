@@ -37,34 +37,34 @@ jobs:
           sudo apt-get -y install podman
 
       - name: 'Params: required only with no defaults'
-        if: steps.pre-setup.outcome == 'success'
+        if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
 
       - name: 'Params: image-source'
-        if: steps.pre-setup.outcome == 'success'
+        if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           image-source: podman
 
       - name: 'Params: config-file'
-        if: steps.pre-setup.outcome == 'success'
+        if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           config-file: ${{ github.workspace }}/.github/.dive-ci.yaml
 
       - name: 'Params: github-token'
-        if: steps.pre-setup.outcome == 'success'
+        if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Params: dive-image-registry, dive-image-version'
-        if: steps.pre-setup.outcome == 'success'
+        if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
