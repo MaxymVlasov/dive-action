@@ -9,12 +9,15 @@ on:
   push:
     branches:
       - main
-    paths-ignore: &paths-ignore
+    paths-ignore:
       - '**.md'
       - docs/**
       - CHANGELOG*
   pull_request:
-    paths-ignore: *paths-ignore
+    paths-ignore:
+      - '**.md'
+      - docs/**
+      - CHANGELOG*
   workflow_dispatch:
 
 permissions:
