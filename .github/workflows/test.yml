@@ -43,6 +43,10 @@ jobs:
           # Verify the test image is available in Podman
           podman images
 
+      - run: |
+          docker images
+          podman images
+
       - name: 'Params: required only with no defaults'
         if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
