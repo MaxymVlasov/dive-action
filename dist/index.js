@@ -98,12 +98,33 @@ function format(output) {
     }
     return ret.join('\n');
 }
+/**
+ * Executes a Docker image analysis using the dive tool and handles the results.
+ *
+ * @remarks
+ * This async function performs the following key steps:
+ * - Pulls the specified dive tool Docker image
+ * - Runs dive analysis on a target Docker image
+ * - Handles different exit scenarios, including posting comments on GitHub issues
+ *
+ * @throws {Error} Fails the GitHub Action if analysis encounters issues or lacks required configuration
+ *
+ * @returns A promise that resolves when the analysis is complete
+ *
+ * @beta
+ */
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const image = core.getInput('image');
             const configFile = core.getInput('config-file');
-            const diveImage = 'ghcr.io/joschi/dive:0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17';
+            const diveRepo = core.getInput('dive-image-registry');
+            // Validate Docker image name format
+            if (!/^[\w.\-_/]+$/.test(diveRepo)) {
+                throw new Error('Invalid dive-image-registry format');
+            }
+            const diveVersion = core.getInput('dive-image-version');
+            const diveImage = `${diveRepo}:${diveVersion}`;
             yield exec.exec('docker', ['pull', diveImage]);
             const commandOptions = [
                 '-e',
