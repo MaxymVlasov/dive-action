@@ -136,9 +136,9 @@ function run() {
                 '/var/run/docker.sock:/var/run/docker.sock'
             ];
             const hasConfigFile = fs_1.default.existsSync(configFile);
-            const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive-ci`;
+            const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`;
             if (!hasConfigFile && configFile !== configFileDefaultPath) {
-                core.setFailed(`Config file not found in the specified path '${configFile}'` +
+                core.setFailed(`Config file not found in the specified path '${configFile}'\n` +
                     `\${{ github.workspace }} value is: '${process.env.GITHUB_WORKSPACE}'`);
                 return;
             }

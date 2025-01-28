@@ -84,10 +84,10 @@ async function run(): Promise<void> {
     ]
 
     const hasConfigFile = fs.existsSync(configFile)
-    const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive-ci`
+    const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`
     if (!hasConfigFile && configFile !== configFileDefaultPath) {
       core.setFailed(
-        `Config file not found in the specified path '${configFile}'` +
+        `Config file not found in the specified path '${configFile}'\n` +
           `\${{ github.workspace }} value is: '${process.env.GITHUB_WORKSPACE}'`
       )
       return
