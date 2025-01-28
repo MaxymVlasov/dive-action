@@ -84,6 +84,12 @@ async function run(): Promise<void> {
     ]
 
     const hasConfigFile = fs.existsSync(configFile)
+    const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive-ci`
+    if (!hasConfigFile && configFile !== configFileDefaultPath) {
+      core.setFailed(en.configFileNotFound)
+      return
+    }
+
     if (hasConfigFile) {
       commandOptions.push(
         '--mount',

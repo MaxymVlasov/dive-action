@@ -1,5 +1,6 @@
 {
   "analyzingImage": "Analyzing image",
+  "configFileNotFound": "Config file not found in the specified path",
   "countHeader": "| Count | Wasted Space | File Path |",
   "countHeaderPrefix": "Count",
   "inefficientFiles": "**The container image has inefficient files.**",
