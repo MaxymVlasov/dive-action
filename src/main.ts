@@ -1,37 +1,37 @@
+/* eslint-disable i18n-text/no-en */
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as github from '@actions/github'
 import stripAnsi from 'strip-ansi'
 import fs from 'fs'
-import * as en from './locales/en.json'
 
 function format(output: string): string {
-  const ret = [en.inefficientFiles]
+  const ret = ['**The container image has inefficient files.**']
   let summarySection = false
   let inefficientFilesSection = false
   let resultSection = false
 
   for (const line of output.split('\n')) {
-    if (line.includes(en.analyzingImage)) {
+    if (line.includes('Analyzing image')) {
       summarySection = true
       inefficientFilesSection = false
       resultSection = false
-      ret.push(en.summary)
-    } else if (line.includes(en.inefficientFilesHeader)) {
+      ret.push('### Summary')
+    } else if (line.includes('Inefficient Files:')) {
       summarySection = false
       inefficientFilesSection = true
       resultSection = false
-      ret.push(en.inefficientFilesSection)
-    } else if (line.includes(en.resultsHeader)) {
+      ret.push('### Inefficient Files')
+    } else if (line.includes('Results:')) {
       summarySection = false
       inefficientFilesSection = false
       resultSection = true
-      ret.push(en.results)
+      ret.push('### Results')
     } else if (summarySection || resultSection) {
       ret.push(stripAnsi(line))
     } else if (inefficientFilesSection) {
-      if (line.startsWith(en.countHeaderPrefix)) {
-        ret.push(en.countHeader)
+      if (line.startsWith('Count')) {
+        ret.push('| Count | Wasted Space | File Path |')
         ret.push('|---|---|---|')
       } else {
         // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
@@ -86,7 +86,10 @@ async function run(): Promise<void> {
     const hasConfigFile = fs.existsSync(configFile)
     const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive-ci`
     if (!hasConfigFile && configFile !== configFileDefaultPath) {
-      core.setFailed(en.configFileNotFound)
+      core.setFailed(
+        `Config file not found in the specified path '${configFile}'` +
+          `\${{ github.workspace }} value is: '${process.env.GITHUB_WORKSPACE}'`
+      )
       return
     }
 
@@ -122,7 +125,7 @@ async function run(): Promise<void> {
     const token = core.getInput('github-token')
     if (!token) {
       core.setFailed(
-        `${en.scanFailed} (exit code: ${exitCode}). To post scan results ` +
+        `Scan failed (exit code: ${exitCode}). To post scan results ` +
           'as a PR comment, please provide the github-token in the action inputs.'
       )
       return
@@ -134,7 +137,7 @@ async function run(): Promise<void> {
       body: format(output)
     }
     await octokit.rest.issues.createComment(comment)
-    core.setFailed(`${en.scanFailed} (exit code: ${exitCode})`)
+    core.setFailed(`Scan faile (exit code: ${exitCode})`)
   } catch (error) {
     core.setFailed(error instanceof Error ? error.message : String(error))
   }
