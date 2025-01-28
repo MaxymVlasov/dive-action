@@ -24,6 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
+      - name: Install Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install podman
+
       - name: 'Params: required only with no defaults'
         if: always()
         uses: ./
@@ -57,4 +62,4 @@ jobs:
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           dive-image-registry: ghcr.io/joschi/dive
-          dive-image-version: v0.14.0
+          dive-image-version: 0.14.0
