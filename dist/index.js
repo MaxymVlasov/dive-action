@@ -104,6 +104,10 @@ function run() {
             const image = core.getInput('image');
             const configFile = core.getInput('config-file');
             const diveRepo = core.getInput('dive-image-registry');
+            // Validate Docker image name format
+            if (!/^[\w.\-_/]+$/.test(diveRepo)) {
+                throw new Error('Invalid dive-image-registry format');
+            }
             const diveVersion = core.getInput('dive-image-version');
             const diveImage = `${diveRepo}:${diveVersion}`;
             yield exec.exec('docker', ['pull', diveImage]);

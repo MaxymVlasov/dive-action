@@ -1,5 +1,7 @@
 ci:
   autoupdate_schedule: quarterly
+  skip:
+    - npm-install-and-run-all
 
 exclude: |
   (?x)
@@ -108,6 +110,14 @@ repos:
     hooks:
       - id: npm-install-and-run-all
         name: Run tests and regenerate the dist/ directory
-        entry: bash -c 'npm install && npm run all'
+        entry: >-
+          bash -c '
+          [ -e package-lock.json ]
+          && if ! git diff --quiet HEAD -- package.json package-lock.json;
+          then npm install;
+          fi
+          && npm run all
+          '
         language: system
         files: ^src/
+        verbose: true
