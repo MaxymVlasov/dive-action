@@ -59,7 +59,7 @@ jobs:
         if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
-          image: ${{ env.SUCCESS_IMAGE }}
+          image: localhost:latest
           image-source: podman
 
       - name: 'Params: config-file'
