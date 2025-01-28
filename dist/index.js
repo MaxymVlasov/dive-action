@@ -118,6 +118,10 @@ function run() {
         try {
             const image = core.getInput('image');
             const imageSource = core.getInput('image-source');
+            const allowedSources = ['docker', 'docker-archive', 'podman'];
+            if (!allowedSources.includes(imageSource)) {
+                throw new Error(`Invalid image-source. Allowed values are: ${allowedSources.join(', ')}`);
+            }
             const configFile = core.getInput('config-file');
             const diveRepo = core.getInput('dive-image-registry');
             // Validate Docker image name format
