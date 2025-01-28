@@ -27,7 +27,6 @@ reduce your container image size as early as possible.
 | dive-image-version  | String | false    | `0.13.1@sha256:f016a4bd2837` `130545e391acee7876aa5f7258` `ccdb12640ab4afaffa1c597d17` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility |
 
 ### Workflow
-engine
 ```yaml
 name: Dive CI
 
