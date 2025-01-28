@@ -123,37 +123,26 @@ function run() {
                 throw new Error(`Invalid image-source. Allowed values are: ${allowedSources.join(', ')}`);
             }
             const configFile = core.getInput('config-file');
-            const diveRepo = core.getInput('dive-image-registry');
-            // Validate Docker image name format
-            if (!/^[\w.\-_/]+$/.test(diveRepo)) {
-                throw new Error('Invalid dive-image-registry format');
-            }
-            const diveVersion = core.getInput('dive-image-version');
-            const diveImage = `${diveRepo}:${diveVersion}`;
-            yield exec.exec('docker', ['pull', diveImage]);
-            const commandOptions = [
-                '-e',
-                'CI=true',
-                '-e',
-                'DOCKER_API_VERSION=1.45',
-                '--rm',
-                '-v',
-                '/var/run/docker.sock:/var/run/docker.sock'
-            ];
+            // const diveRepo = core.getInput('dive-image-registry')
+            // // Validate Docker image name format
+            // if (!/^[\w.\-_/]+$/.test(diveRepo)) {
+            //   throw new Error('Invalid dive-image-registry format')
+            // }
+            // const diveVersion = core.getInput('dive-image-version')
+            // const diveImage = `${diveRepo}:${diveVersion}`
+            yield exec.exec('curl', [
+                'https://github.com/joschi/dive/releases/download/v0.14.0/dive_0.14.0_linux_amd64.deb'
+            ]);
+            yield exec.exec('sudo', [
+                'apt',
+                'install',
+                './dive_0.14.0_linux_amd64.deb',
+                '-y'
+            ]);
             const hasConfigFile = fs_1.default.existsSync(configFile);
+            const parameters = ['run', 'dive', image, '--source', imageSource];
             if (hasConfigFile) {
-                commandOptions.push('--mount', `type=bind,source=${configFile},target=/.dive-ci`);
-            }
-            const parameters = [
-                'run',
-                ...commandOptions,
-                diveImage,
-                image,
-                '--source',
-                imageSource
-            ];
-            if (hasConfigFile) {
-                parameters.push('--ci-config', '/.dive-ci');
+                parameters.push('--ci-config', configFile);
             }
             let output = '';
             const execOptions = {
@@ -167,7 +156,7 @@ function run() {
                     }
                 }
             };
-            const exitCode = yield exec.exec('docker', parameters, execOptions);
+            const exitCode = yield exec.exec('dive', parameters, execOptions);
             if (exitCode === 0) {
                 // success
                 return;
