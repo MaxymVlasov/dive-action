@@ -117,6 +117,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const image = core.getInput('image');
+            const imageSource = core.getInput('image-source');
             const configFile = core.getInput('config-file');
             const diveRepo = core.getInput('dive-image-registry');
             // Validate Docker image name format
@@ -139,7 +140,14 @@ function run() {
             if (hasConfigFile) {
                 commandOptions.push('--mount', `type=bind,source=${configFile},target=/.dive-ci`);
             }
-            const parameters = ['run', ...commandOptions, diveImage, image];
+            const parameters = [
+                'run',
+                ...commandOptions,
+                diveImage,
+                image,
+                '--source',
+                imageSource
+            ];
             if (hasConfigFile) {
                 parameters.push('--ci-config', '/.dive-ci');
             }

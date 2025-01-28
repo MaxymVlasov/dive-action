@@ -20,14 +20,14 @@ reduce your container image size as early as possible.
 | Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type   | Required | Default | Description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 | ------------------- | ------ | -------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | image               | String | true     |                                                                                        | Image to analyze                                                               |
+| image-source        | String | true     | `docker`                                                                               | Specify the container image source Dive uses for fetching and analyzing the image. Possible values: `docker`, `docker-archive`, `podman` |
 | config-file         | String | false    | `${{ github.workspace }}/.dive.yaml`                                                   | Path to [dive config file](https://github.com/joschi/dive#ci-integration)      |
 | github-token        | String | false    |                                                                                        | GitHub token to post PR comment on dive failure                                |
 | dive-image-registry | String | false    | `ghcr.io/joschi/dive`                                                                  | Docker registry to pull the Dive image from                                    |
 | dive-image-version  | String | false    | `0.13.1@sha256:f016a4bd2837` `130545e391acee7876aa5f7258` `ccdb12640ab4afaffa1c597d17` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility |
 
-
 ### Workflow
-
+engine
 ```yaml
 name: Dive CI
 

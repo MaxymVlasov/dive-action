@@ -8,6 +8,12 @@ inputs:
   image:
     description: Image to analyze
     required: true
+  image-source:
+    description: >-
+      Specify the container image source Dive uses for fetching and analyzing the image. Possible
+      values: docker, docker-archive, podman
+    required: true
+    default: docker
   config-file:
     description: Path to dive config file
     required: false
