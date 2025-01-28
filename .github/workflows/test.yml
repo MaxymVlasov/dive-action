@@ -35,6 +35,8 @@ jobs:
           # Install Podman
           sudo apt-get update
           sudo apt-get -y install podman
+          # Copy the test image to the local Podman storage
+          docker save ${{ env.SUCCESS_IMAGE }} | podman load
 
       - name: 'Params: required only with no defaults'
         if: always() && steps.pre-setup.outcome == 'success'
