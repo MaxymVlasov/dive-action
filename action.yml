@@ -21,17 +21,16 @@ inputs:
   github-token:
     description: GitHub Token to post PR comment
     required: false
-
-#   dive-image-registry:
-#     description: Docker registry to pull the Dive image from
-#     required: false
-#     default: ghcr.io/joschi/dive
-#   dive-image-version:
-#     description: >-
-#       Version of the Dive docker image to use. While `latest` is supported,
-#       using a specific version with SHA is recommended for security and reproducibility
-#     required: false
-#     default: 0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
+  dive-image-registry:
+    description: Docker registry to pull the Dive image from
+    required: false
+    default: ghcr.io/joschi/dive
+  dive-image-version:
+    description: >-
+      Version of the Dive docker image to use. While `latest` is supported,
+      using a specific version with SHA is recommended for security and reproducibility
+    required: false
+    default: 0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
 
 runs:
   using: node20

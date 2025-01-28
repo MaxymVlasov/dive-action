@@ -45,6 +45,8 @@ jobs:
           podman images
           # Add Podman to PATH
           which podman
+          echo "$(which podman)" >> $GITHUB_PATH
+          echo "/usr/bin" >> $GITHUB_PATH
 
 
       - name: 'Params: required only with no defaults'
