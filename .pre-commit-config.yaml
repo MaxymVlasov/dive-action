@@ -109,7 +109,7 @@ repos:
   - repo: local
     hooks:
       - id: npm-install-and-run-all
-        name: Run tests and regenerate the dist/ directory
+        name: Run tests and regenerate package-lock.json & dist/ directory
         entry: >-
           bash -c '
           [ -e package-lock.json ]
@@ -119,5 +119,5 @@ repos:
           && npm run all
           '
         language: system
-        files: ^src/
+        files: ^src/|^package\.json$
         verbose: true
