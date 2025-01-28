@@ -162,6 +162,8 @@ function run() {
             }
             const token = core.getInput('github-token');
             if (!token) {
+                core.setFailed(`${en.scanFailed} (exit code: ${exitCode}). To post scan results ` +
+                    'as a PR comment, please provide the github-token in the action inputs.');
                 return;
             }
             const octokit = github.getOctokit(token);
