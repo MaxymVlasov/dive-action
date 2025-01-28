@@ -15,11 +15,46 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
       - run: npm install
       - run: npm run all
+
   test:  # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+    env:
+      SUCCESS_IMAGE: ghcr.io/joschi/dive:latest
+
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
-      - uses: ./
+
+      - name: 'Params: required only with no defaults'
+        if: always()
+        uses: ./
         with:
+          image: ${{ env.SUCCESS_IMAGE }}
+
+      - name: 'Params: image-source'
+        if: always()
+        uses: ./
+        with:
+          image: ${{ env.SUCCESS_IMAGE }}
+          image-source: podman
+
+      - name: 'Params: config-file'
+        if: always()
+        uses: ./
+        with:
+          image: ${{ env.SUCCESS_IMAGE }}
+          config-file: ${{ github.workspace }}/.github/.dive-ci.yaml
+
+      - name: 'Params: github-token'
+        if: always()
+        uses: ./
+        with:
+          image: ${{ env.SUCCESS_IMAGE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          image: ghcr.io/joschi/dive:latest
+
+      - name: 'Params: dive-image-registry, dive-image-version'
+        if: always()
+        uses: ./
+        with:
+          image: ${{ env.SUCCESS_IMAGE }}
+          dive-image-registry: ghcr.io/joschi/dive
+          dive-image-version: v0.14.0
