@@ -9,11 +9,12 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
+    paths-ignore: &paths-ignore
       - '**.md'
+      - docs/**
+      - CHANGELOG*
   pull_request:
-    paths-ignore:
-      - '**.md'
+    paths-ignore: *paths-ignore
   workflow_dispatch:
 
 permissions:
@@ -57,7 +58,13 @@ jobs:
           if ! git diff --exit-code dist/; then
             echo "Detected uncommitted changes after build. "
             echo "This usually means that the dist/ directory was not rebuilt before committing."
+
+            echo "To fix this next time:"
+            echo "1. Run 'npm install && npm run all' locally"
+            echo "2. Commit any changes to the dist/ directory"
+            echo "3. Push your changes"
             git diff --text
+
             exit 1
           fi
 
