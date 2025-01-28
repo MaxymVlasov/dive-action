@@ -24,42 +24,50 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
-      - name: Install Podman
+      - name: Pre-setup
+        id: pre-setup
         run: |
+          # Verify test image existence
+          docker pull ${{ env.SUCCESS_IMAGE }} || {
+            echo "Test image ${{ env.SUCCESS_IMAGE }} not found" >&2
+            exit 1
+          }
+          # Install Podman
           sudo apt-get update
           sudo apt-get -y install podman
 
       - name: 'Params: required only with no defaults'
-        if: always()
+        if: steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
 
       - name: 'Params: image-source'
-        if: always()
+        if: steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           image-source: podman
 
       - name: 'Params: config-file'
-        if: always()
+        if: steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           config-file: ${{ github.workspace }}/.github/.dive-ci.yaml
 
       - name: 'Params: github-token'
-        if: always()
+        if: steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Params: dive-image-registry, dive-image-version'
-        if: always()
+        if: steps.pre-setup.outcome == 'success'
         uses: ./
         with:
           image: ${{ env.SUCCESS_IMAGE }}
           dive-image-registry: ghcr.io/joschi/dive
-          dive-image-version: 0.14.0
+          dive-image-version: >-
+            0.14.0
