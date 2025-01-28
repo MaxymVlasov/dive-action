@@ -22,7 +22,7 @@ permissions:
 jobs:
   check-dist:
     permissions:
-      # for actions/upload-artifact to upload the expected dist/ directory
+      # for EndBug/add-and-commit to back-push the expected dist/ directory
       contents: write
 
     runs-on: ubuntu-latest
