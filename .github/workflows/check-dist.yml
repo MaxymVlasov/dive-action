@@ -46,15 +46,24 @@ jobs:
       - name: Compare the expected and actual dist/ directories
         id: diff
         run: |
-          if [ "$(git diff --ignore-cr-at-eol --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
-            echo "Detected uncommitted changes after build.  See status below:"
+          if ! git diff --exit-code dist/; then
+            echo "Detected uncommitted changes after build. "
+            echo "This usually means that the dist/ directory was not rebuilt before committing."
             git diff --text
             exit 1
           fi
 
-      # If index.js was different than expected, upload the expected version as an artifact
-      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08  # v4.6.0
-        if: ${{ failure() && steps.diff.conclusion == 'failure' }}
+      - name: Push fixes
+        if: failure()
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5  # v9.1.4
         with:
-          name: dist
-          path: dist/
+          # Determines the way the action fills missing author name and email.
+          # Three options are available:
+          # - github_actor -> UserName <UserName@users.noreply.github.com>
+          # - user_info -> Your Display Name <your-actual@email.com>
+          # - github_actions -> github-actions <email associated with the github logo>
+          # Default: github_actor
+          default_author: github_actor
+          # The message for the commit.
+          # Default: 'Commit from GitHub Actions (name of the workflow)'
+          message: '[CI] Autoupdate `dist/` directory'
