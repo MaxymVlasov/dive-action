@@ -30,6 +30,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          # Ensure successful push of fixes
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
 
       - name: Set Node.js 20
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a  # v4.2.0
