@@ -52,42 +52,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* eslint-disable i18n-text/no-en */
 const core = __importStar(__nccwpck_require__(7484));
 const exec = __importStar(__nccwpck_require__(5236));
 const github = __importStar(__nccwpck_require__(3228));
 const strip_ansi_1 = __importDefault(__nccwpck_require__(348));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
-const en = __importStar(__nccwpck_require__(4349));
 function format(output) {
-    const ret = [en.inefficientFiles];
+    const ret = ['**The container image has inefficient files.**'];
     let summarySection = false;
     let inefficientFilesSection = false;
     let resultSection = false;
     for (const line of output.split('\n')) {
-        if (line.includes(en.analyzingImage)) {
+        if (line.includes('Analyzing image')) {
             summarySection = true;
             inefficientFilesSection = false;
             resultSection = false;
-            ret.push(en.summary);
+            ret.push('### Summary');
         }
-        else if (line.includes(en.inefficientFilesHeader)) {
+        else if (line.includes('Inefficient Files:')) {
             summarySection = false;
             inefficientFilesSection = true;
             resultSection = false;
-            ret.push(en.inefficientFilesSection);
+            ret.push('### Inefficient Files');
         }
-        else if (line.includes(en.resultsHeader)) {
+        else if (line.includes('Results:')) {
             summarySection = false;
             inefficientFilesSection = false;
             resultSection = true;
-            ret.push(en.results);
+            ret.push('### Results');
         }
         else if (summarySection || resultSection) {
             ret.push((0, strip_ansi_1.default)(line));
         }
         else if (inefficientFilesSection) {
-            if (line.startsWith(en.countHeaderPrefix)) {
-                ret.push(en.countHeader);
+            if (line.startsWith('Count')) {
+                ret.push('| Count | Wasted Space | File Path |');
                 ret.push('|---|---|---|');
             }
             else {
@@ -97,6 +97,10 @@ function format(output) {
         }
     }
     return ret.join('\n');
+}
+function error(message) {
+    core.setOutput('error', message);
+    core.setFailed(message);
 }
 /**
  * Executes a Docker image analysis using the dive tool and handles the results.
@@ -136,6 +140,12 @@ function run() {
                 '/var/run/docker.sock:/var/run/docker.sock'
             ];
             const hasConfigFile = fs_1.default.existsSync(configFile);
+            const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`;
+            if (!hasConfigFile && configFile !== configFileDefaultPath) {
+                error(`Config file not found in the specified path '${configFile}'\n` +
+                    `github.workspace value is: '${process.env.GITHUB_WORKSPACE}'`);
+                return;
+            }
             if (hasConfigFile) {
                 commandOptions.push('--mount', `type=bind,source=${configFile},target=/.dive-ci`);
             }
@@ -162,17 +172,17 @@ function run() {
             }
             const token = core.getInput('github-token');
             if (!token) {
-                core.setFailed(`${en.scanFailed} (exit code: ${exitCode}). To post scan results ` +
+                error(`Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
                     'as a PR comment, please provide the github-token in the action inputs.');
                 return;
             }
             const octokit = github.getOctokit(token);
             const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: format(output) });
             yield octokit.rest.issues.createComment(comment);
-            core.setFailed(`${en.scanFailed} (exit code: ${exitCode})`);
+            error(`Scan failed (exit code: ${exitCode})`);
         }
-        catch (error) {
-            core.setFailed(error instanceof Error ? error.message : String(error));
+        catch (e) {
+            error(e instanceof Error ? e.message : String(e));
         }
     });
 }
@@ -32029,14 +32039,6 @@ function stripAnsi(string) {
 	return string.replace(regex, '');
 }
 
-
-/***/ }),
-
-/***/ 4349:
-/***/ ((module) => {
-
-"use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"analyzingImage":"Analyzing image","countHeader":"| Count | Wasted Space | File Path |","countHeaderPrefix":"Count","inefficientFiles":"**The container image has inefficient files.**","inefficientFilesHeader":"Inefficient Files:","inefficientFilesSection":"### Inefficient Files","results":"### Results","resultsHeader":"Results:","scanFailed":"Scan failed","summary":"### Summary"}');
 
 /***/ })
 
