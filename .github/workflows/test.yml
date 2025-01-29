@@ -65,6 +65,7 @@ jobs:
       # Verifies that the action properly handles and reports errors
       # when trying to analyze a non-existent Docker image
       - name: '[Run] Negative test: Invalid image name'
+        id: invalid-image
         if: always() && steps.pre-setup.outcome == 'success'
         continue-on-error: true
         uses: ./
@@ -89,6 +90,7 @@ jobs:
           fi
       # Tests error handling when the specified dive configuration file doesn't exist
       - name: '[Run] Negative test: Non-existent config file'
+        id: invalid-config
         if: always() && steps.pre-setup.outcome == 'success'
         continue-on-error: true
         uses: ./
@@ -116,6 +118,7 @@ jobs:
       # Validates that the action correctly enforces the required image
       # input parameter. Note, that it has no access to post a comment
       - name: '[Run] Negative test: Missing required image parameter'
+        id: missing-required
         if: always() && steps.pre-setup.outcome == 'success'
         continue-on-error: true
         uses: ./
