@@ -1,4 +1,4 @@
-name: build
+name: Tests
 on:  # rebuild any PRs and main branch changes
   pull_request:
   push:
@@ -103,8 +103,8 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.invalid-config.outputs.error }}"
-          expected_message='Config file not found in the specified path \'/non/existent/path.yaml\'
-          ${{ github.workspace }} value is: \'/home/runner/work/dive-action/dive-action\''
+          expected_message="Config file not found in the specified path '/non/existent/path.yaml'
+          \$\{\{ github.workspace \}\} value is: '/home/runner/work/dive-action/dive-action'"
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
