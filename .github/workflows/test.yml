@@ -19,7 +19,7 @@ jobs:
   test:  # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     env:
-      SUCCESS_IMAGE: ghcr.io/joschi/dive:latest
+      TEST_IMAGE: ghcr.io/joschi/dive:latest
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
@@ -28,8 +28,8 @@ jobs:
         id: pre-setup
         run: |
           # Verify test image existence
-          docker pull ${{ env.SUCCESS_IMAGE }} || {
-            echo "Test image ${{ env.SUCCESS_IMAGE }} not found" >&2
+          docker pull ${{ env.TEST_IMAGE }} || {
+            echo "Test image ${{ env.TEST_IMAGE }} not found" >&2
             exit 1
           }
 
@@ -37,27 +37,27 @@ jobs:
         if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
-          image: ${{ env.SUCCESS_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}
 
       - name: 'Params: config-file'
         if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
-          image: ${{ env.SUCCESS_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}
           config-file: ${{ github.workspace }}/.github/.dive-ci.yaml
 
       - name: 'Params: github-token'
         if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
-          image: ${{ env.SUCCESS_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Params: dive-image-registry, dive-image-version'
         if: always() && steps.pre-setup.outcome == 'success'
         uses: ./
         with:
-          image: ${{ env.SUCCESS_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}
           dive-image-registry: ghcr.io/joschi/dive
           dive-image-version: >-
             0.14.0
@@ -95,7 +95,7 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
-          image: ${{ env.SUCCESS_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}
           config-file: /non/existent/path.yaml
 
       - name: '[Verification] Negative test: Non-existent config file'
