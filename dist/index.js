@@ -143,7 +143,7 @@ function run() {
             const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`;
             if (!hasConfigFile && configFile !== configFileDefaultPath) {
                 error(`Config file not found in the specified path '${configFile}'\n` +
-                    `\${{ github.workspace }} value is: '${process.env.GITHUB_WORKSPACE}'`);
+                    `github.workspace value is: '${process.env.GITHUB_WORKSPACE}'`);
                 return;
             }
             if (hasConfigFile) {
