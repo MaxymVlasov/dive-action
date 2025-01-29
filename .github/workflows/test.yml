@@ -104,7 +104,7 @@ jobs:
         run: |
           error_message="${{ steps.invalid-config.outputs.error }}"
           expected_message="Config file not found in the specified path '/non/existent/path.yaml'
-          \${{ '{' }} github.workspace \${{ '}' }} value is: '\${{ github.workspace }}'"
+          " + '${{ "{" }} github.workspace ${{ "}" }} value is: \'${{ github.workspace }}\''
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
