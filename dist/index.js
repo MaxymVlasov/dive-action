@@ -98,6 +98,10 @@ function format(output) {
     }
     return ret.join('\n');
 }
+function error(message) {
+    core.setOutput('error', message);
+    core.setFailed(message);
+}
 /**
  * Executes a Docker image analysis using the dive tool and handles the results.
  *
@@ -138,7 +142,7 @@ function run() {
             const hasConfigFile = fs_1.default.existsSync(configFile);
             const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`;
             if (!hasConfigFile && configFile !== configFileDefaultPath) {
-                core.setFailed(`Config file not found in the specified path '${configFile}'\n` +
+                error(`Config file not found in the specified path '${configFile}'\n` +
                     `\${{ github.workspace }} value is: '${process.env.GITHUB_WORKSPACE}'`);
                 return;
             }
@@ -168,17 +172,17 @@ function run() {
             }
             const token = core.getInput('github-token');
             if (!token) {
-                core.setFailed(`Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
+                error(`Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
                     'as a PR comment, please provide the github-token in the action inputs.');
                 return;
             }
             const octokit = github.getOctokit(token);
             const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: format(output) });
             yield octokit.rest.issues.createComment(comment);
-            core.setFailed(`Scan failed (exit code: ${exitCode})`);
+            error(`Scan failed (exit code: ${exitCode})`);
         }
-        catch (error) {
-            core.setFailed(error instanceof Error ? error.message : String(error));
+        catch (e) {
+            error(e instanceof Error ? e.message : String(e));
         }
     });
 }

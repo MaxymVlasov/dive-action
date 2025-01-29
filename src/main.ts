@@ -44,6 +44,11 @@ function format(output: string): string {
   return ret.join('\n')
 }
 
+function error(message: string): void {
+  core.setOutput('error', message)
+  core.setFailed(message)
+}
+
 /**
  * Executes a Docker image analysis using the dive tool and handles the results.
  *
@@ -86,7 +91,7 @@ async function run(): Promise<void> {
     const hasConfigFile = fs.existsSync(configFile)
     const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`
     if (!hasConfigFile && configFile !== configFileDefaultPath) {
-      core.setFailed(
+      error(
         `Config file not found in the specified path '${configFile}'\n` +
           `\${{ github.workspace }} value is: '${process.env.GITHUB_WORKSPACE}'`
       )
@@ -124,7 +129,7 @@ async function run(): Promise<void> {
 
     const token = core.getInput('github-token')
     if (!token) {
-      core.setFailed(
+      error(
         `Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
           'as a PR comment, please provide the github-token in the action inputs.'
       )
@@ -137,9 +142,9 @@ async function run(): Promise<void> {
       body: format(output)
     }
     await octokit.rest.issues.createComment(comment)
-    core.setFailed(`Scan failed (exit code: ${exitCode})`)
-  } catch (error) {
-    core.setFailed(error instanceof Error ? error.message : String(error))
+    error(`Scan failed (exit code: ${exitCode})`)
+  } catch (e) {
+    error(e instanceof Error ? e.message : String(e))
   }
 }
 
