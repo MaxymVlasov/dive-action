@@ -201,7 +201,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Wait briefly for the comment to be posted
-          sleep 2
+          sleep 1
 
           # Get the PR number
           pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
@@ -217,5 +217,4 @@ jobs:
 
           # Mark the comment as resolved
           gh api -X PATCH "repos/${{ github.repository }}/pulls/comments/${comment_id}" \
-            -f body="Dive Summary" \
             -f state="resolved"
