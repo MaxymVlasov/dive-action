@@ -122,6 +122,7 @@ function run() {
         try {
             const image = core.getInput('image');
             const configFile = core.getInput('config-file');
+            const alwaysComment = Boolean(core.getInput('always-comment'));
             const diveRepo = core.getInput('dive-image-registry');
             // Validate Docker image name format
             if (!/^[\w.\-_/]+$/.test(diveRepo)) {
@@ -166,7 +167,7 @@ function run() {
                 }
             };
             const exitCode = yield exec.exec('docker', parameters, execOptions);
-            if (exitCode === 0) {
+            if (exitCode === 0 && !alwaysComment) {
                 // success
                 return;
             }
@@ -179,6 +180,9 @@ function run() {
             const octokit = github.getOctokit(token);
             const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: format(output) });
             yield octokit.rest.issues.createComment(comment);
+            if (alwaysComment) {
+                return;
+            }
             error(`Scan failed (exit code: ${exitCode})`);
         }
         catch (e) {

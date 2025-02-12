@@ -68,6 +68,7 @@ async function run(): Promise<void> {
   try {
     const image = core.getInput('image')
     const configFile = core.getInput('config-file')
+    const alwaysComment = Boolean(core.getInput('always-comment'))
 
     const diveRepo = core.getInput('dive-image-registry')
     // Validate Docker image name format
@@ -122,7 +123,7 @@ async function run(): Promise<void> {
       }
     }
     const exitCode = await exec.exec('docker', parameters, execOptions)
-    if (exitCode === 0) {
+    if (exitCode === 0 && !alwaysComment) {
       // success
       return
     }
@@ -142,6 +143,11 @@ async function run(): Promise<void> {
       body: format(output)
     }
     await octokit.rest.issues.createComment(comment)
+
+    if (alwaysComment) {
+      return
+    }
+
     error(`Scan failed (exit code: ${exitCode})`)
   } catch (e) {
     error(e instanceof Error ? e.message : String(e))
