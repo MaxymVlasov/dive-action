@@ -191,3 +191,4 @@ jobs:
         with:
           image: ${{ env.TEST_IMAGE }}
           always-comment: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
