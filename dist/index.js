@@ -180,7 +180,7 @@ function run() {
             const octokit = github.getOctokit(token);
             const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: format(output) });
             yield octokit.rest.issues.createComment(comment);
-            if (alwaysComment) {
+            if (exitCode === 0 && alwaysComment) {
                 return;
             }
             error(`Scan failed (exit code: ${exitCode})`);

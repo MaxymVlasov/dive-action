@@ -144,7 +144,7 @@ async function run(): Promise<void> {
     }
     await octokit.rest.issues.createComment(comment)
 
-    if (alwaysComment) {
+    if (exitCode === 0 && alwaysComment) {
       return
     }
 
