@@ -34,9 +34,6 @@ name: Dive CI
 on:
  pull_request:
 
-permissions:
-  contents: read
-
 jobs:
   dive:
     permissions:
