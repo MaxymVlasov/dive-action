@@ -163,8 +163,8 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.always-comment-missing-github-token.outputs.error }}"
-          expected_message="Resource not accessible by integration - \
-          https://docs.github.com/rest/issues/comments#create-an-issue-comment"
+          expected_message="To post scan results as a PR comment, please \
+          provide the github-token in the action inputs."
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
