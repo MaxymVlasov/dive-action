@@ -50,17 +50,32 @@ function error(message: string): void {
 }
 
 /**
- * Executes a Docker image analysis using the dive tool and handles the results.
+ * Orchestrates a Docker image analysis using the dive tool.
  *
- * @remarks
- * This async function performs the following key steps:
- * - Pulls the specified dive tool Docker image
- * - Runs dive analysis on a target Docker image
- * - Handles different exit scenarios, including posting comments on GitHub issues
+ * This async function retrieves input parameters for the GitHub Action, including:
+ * - "image": The target Docker image for analysis (required).
+ * - "config-file": The path to a dive configuration file.
+ * - "dive-image-registry": The Docker registry for the dive tool (must match /^[\w.\-_/]+$/).
+ * - "dive-image-version": The tag/version for the dive tool image.
+ * - "github-token": (Optional) A token used to post the scan results as a GitHub issue comment.
  *
- * @throws {Error} Fails the GitHub Action if analysis encounters issues or lacks required configuration
+ * The function validates these inputs, pulls the corresponding dive tool Docker image, and constructs
+ * the command options for running the dive analysis. If a configuration file exists at the specified
+ * path, it is mounted during execution. The dive command is then executed using Docker, and its output
+ * is captured.
  *
- * @returns A promise that resolves when the analysis is complete
+ * If the analysis completes successfully (exit code 0), the function exits. If the analysis fails:
+ * - When a valid GitHub token is provided, the formatted output is posted as a comment on the related
+ *   GitHub issue.
+ * - If no token is provided, an error message is logged, indicating the need for a token to post results.
+ *
+ * Any error or exception encountered during these steps, including missing required inputs or invalid
+ * configuration formats, results in the GitHub Action being marked as failed.
+ *
+ * @throws Error When required inputs are missing, the dive image registry format is invalid, or any
+ *         errors occur during the analysis execution.
+ *
+ * @returns A promise that resolves when the analysis and related error handling are complete.
  *
  * @beta
  */
