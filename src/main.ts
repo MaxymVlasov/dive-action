@@ -47,7 +47,7 @@ function format(output: string): string {
 function error(message: string): void {
   core.setOutput('error', message)
   core.setFailed(message)
-  throw new Error(message)
+  process.exit(1)
 }
 
 async function postComment(token: string, output: string): Promise<void> {
@@ -148,7 +148,7 @@ async function run(): Promise<void> {
     const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`
 
     if (alwaysComment) {
-      postComment(token, output)
+      await postComment(token, output)
 
       if (exitCode === 0) return
 
@@ -164,7 +164,7 @@ async function run(): Promise<void> {
       )
     }
 
-    postComment(token, output)
+    await postComment(token, output)
 
     error(scanFailedErrorMsg)
   } catch (e) {

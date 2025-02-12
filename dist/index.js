@@ -101,7 +101,7 @@ function format(output) {
 function error(message) {
     core.setOutput('error', message);
     core.setFailed(message);
-    throw new Error(message);
+    process.exit(1);
 }
 function postComment(token, output) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -185,7 +185,7 @@ function run() {
             const exitCode = yield exec.exec('docker', parameters, execOptions);
             const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`;
             if (alwaysComment) {
-                postComment(token, output);
+                yield postComment(token, output);
                 if (exitCode === 0)
                     return;
                 error(scanFailedErrorMsg);
@@ -196,7 +196,7 @@ function run() {
                 error(`Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
                     'a PR comment, please provide the github-token in the action inputs.');
             }
-            postComment(token, output);
+            yield postComment(token, output);
             error(scanFailedErrorMsg);
         }
         catch (e) {

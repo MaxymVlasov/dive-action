@@ -170,7 +170,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.always-comment-missing-github-token.outputs.error }}"
-          expected_message='"always-comment" parameter requires "github-token" to be set.'
+          expected_message='always-comment parameter requires github-token to be set.'
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
