@@ -183,7 +183,7 @@ jobs:
 
       # Runs at the end and only when all other tests pass, as it posts the
       # results as a comment on the PR
-      - name: always-comment with github-token
+      - name: 'Params: always-comment with github-token'
         # It will not be able to create comment outside PR. result in main branch:
         # Not Found - https://docs.github.com/rest
         if: github.ref != 'refs/heads/main'
