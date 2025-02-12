@@ -21,6 +21,10 @@ jobs:
     env:
       TEST_IMAGE: ghcr.io/joschi/dive:latest
 
+    permissions:
+      # 'Params: always-comment with github-token' step to push a comment to PR
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
