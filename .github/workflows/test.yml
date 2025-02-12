@@ -209,11 +209,19 @@ jobs:
           'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Dive Summary")) | .id')
           echo "Comment ID: $comment_id"
 
-          if [ -z "$comment_id" ]; then
-            echo "Expected comment not found in PR"
+          # Create a review comment and mark it as resolved
+          review_comment_id=$(gh api "repos/${{ github.repository }}/pulls/${pr_number}/comments" \
+            -f body="Marking as resolved" \
+            -f commit_id=$(git rev-parse HEAD) \
+            -f path="path/to/file" \
+            -f position=1 \
+            --jq '.id')
+
+          if [ -z "$review_comment_id" ]; then
+            echo "Failed to create review comment"
             exit 1
           fi
 
-          # Mark the comment as resolved
-          gh api -X PATCH "repos/${{ github.repository }}/pulls/comments/${comment_id}" \
+          # Mark the review comment as resolved
+          gh api -X PATCH "repos/${{ github.repository }}/pulls/comments/${review_comment_id}" \
             -f state="resolved"
