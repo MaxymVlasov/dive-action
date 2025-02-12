@@ -47,6 +47,17 @@ function format(output: string): string {
 function error(message: string): void {
   core.setOutput('error', message)
   core.setFailed(message)
+  throw new Error(message)
+}
+
+async function postComment(token: string, output: string): Promise<void> {
+  const octokit = github.getOctokit(token)
+  const comment = {
+    ...github.context.issue,
+    issue_number: github.context.issue.number,
+    body: format(output)
+  }
+  await octokit.rest.issues.createComment(comment)
 }
 
 /**
@@ -69,18 +80,22 @@ async function run(): Promise<void> {
     const image = core.getInput('image')
     if (!image) {
       error('Missing required parameter: image')
-      return
     }
     const configFile = core.getInput('config-file')
     // Convert always-comment input to boolean value.
     // All values other than 'true' are considered false.
     const alwaysComment =
       core.getInput('always-comment').toLowerCase() === 'true'
+    const token = core.getInput('github-token')
+
+    if (alwaysComment && !token) {
+      error('"always-comment" parameter requires "github-token" to be set.')
+    }
 
     const diveRepo = core.getInput('dive-image-registry')
     // Validate Docker image name format
     if (!/^[\w.\-_/]+$/.test(diveRepo)) {
-      throw new Error('Invalid dive-image-registry format')
+      error('Invalid dive-image-registry format')
     }
     const diveVersion = core.getInput('dive-image-version')
     const diveImage = `${diveRepo}:${diveVersion}`
@@ -129,32 +144,29 @@ async function run(): Promise<void> {
       }
     }
     const exitCode = await exec.exec('docker', parameters, execOptions)
-    if (exitCode === 0 && !alwaysComment) {
-      // success
-      return
+
+    const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`
+
+    if (alwaysComment) {
+      postComment(token, output)
+
+      if (exitCode === 0) return
+
+      error(scanFailedErrorMsg)
     }
 
-    const token = core.getInput('github-token')
+    if (exitCode === 0) return
+
     if (!token) {
       error(
-        `Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
-          'as a PR comment, please provide the github-token in the action inputs.'
+        `Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
+          'a PR comment, please provide the github-token in the action inputs.'
       )
-      return
-    }
-    const octokit = github.getOctokit(token)
-    const comment = {
-      ...github.context.issue,
-      issue_number: github.context.issue.number,
-      body: format(output)
-    }
-    await octokit.rest.issues.createComment(comment)
-
-    if (exitCode === 0 && alwaysComment) {
-      return
     }
 
-    error(`Scan failed (exit code: ${exitCode})`)
+    postComment(token, output)
+
+    error(scanFailedErrorMsg)
   } catch (e) {
     error(e instanceof Error ? e.message : String(e))
   }
