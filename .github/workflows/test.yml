@@ -147,6 +147,9 @@ jobs:
             exit 1
           fi
 
+      # Verifies that the action properly handles missing GitHub token when
+      # always-comment is true. Expected to fail as posting comments requires
+      # GitHub token authentication
       - name: '[Run] Negative test: always-comment w/o github-token'
         if: always() && steps.pre-setup.outcome == 'success'
         id: always-comment-missing-github-token
@@ -163,8 +166,9 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.always-comment-missing-github-token.outputs.error }}"
-          expected_message="To post scan results as a PR comment, please \
-          provide the github-token in the action inputs."
+          expected_message="Scan failed (exit code: 0).
+          To post scan results as a PR comment, please provide the github-token \
+          in the action inputs."
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
