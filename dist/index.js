@@ -121,6 +121,10 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const image = core.getInput('image');
+            if (!image) {
+                error('Missing required parameter: image');
+                return;
+            }
             const configFile = core.getInput('config-file');
             const diveRepo = core.getInput('dive-image-registry');
             // Validate Docker image name format
@@ -144,7 +148,6 @@ function run() {
             if (!hasConfigFile && configFile !== configFileDefaultPath) {
                 error(`Config file not found in the specified path '${configFile}'\n` +
                     `github.workspace value is: '${process.env.GITHUB_WORKSPACE}'`);
-                return;
             }
             if (hasConfigFile) {
                 commandOptions.push('--mount', `type=bind,source=${configFile},target=/.dive-ci`);
