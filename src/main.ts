@@ -67,6 +67,10 @@ function error(message: string): void {
 async function run(): Promise<void> {
   try {
     const image = core.getInput('image')
+    if (!image) {
+      error('Missing required parameter: image')
+      return
+    }
     const configFile = core.getInput('config-file')
 
     const diveRepo = core.getInput('dive-image-registry')
@@ -95,7 +99,6 @@ async function run(): Promise<void> {
         `Config file not found in the specified path '${configFile}'\n` +
           `github.workspace value is: '${process.env.GITHUB_WORKSPACE}'`
       )
-      return
     }
 
     if (hasConfigFile) {
