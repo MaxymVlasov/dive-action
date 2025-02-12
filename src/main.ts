@@ -123,6 +123,11 @@ async function run(): Promise<void> {
       }
     }
     const exitCode = await exec.exec('docker', parameters, execOptions)
+    core.setOutput(
+      'info',
+      `exitCode: ${exitCode}, alwaysComment: ${alwaysComment}`
+    )
+
     if (exitCode === 0 && !alwaysComment) {
       // success
       return
