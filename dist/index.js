@@ -58,17 +58,17 @@ const exec = __importStar(__nccwpck_require__(5236));
 const github = __importStar(__nccwpck_require__(3228));
 const strip_ansi_1 = __importDefault(__nccwpck_require__(348));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
-function format(output) {
-    const ret = ['**The container image has inefficient files.**'];
+function composeComment(diveOutput, customLeadingComment) {
+    const ret = customLeadingComment;
     let summarySection = false;
     let inefficientFilesSection = false;
     let resultSection = false;
-    for (const line of output.split('\n')) {
+    for (const line of diveOutput.split('\n')) {
         if (line.includes('Analyzing image')) {
             summarySection = true;
             inefficientFilesSection = false;
             resultSection = false;
-            ret.push('### Summary');
+            ret.push('### Dive Summary');
         }
         else if (line.includes('Inefficient Files:')) {
             summarySection = false;
@@ -103,10 +103,10 @@ function error(message) {
     core.setFailed(message);
     process.exit(1);
 }
-function postComment(token, output) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const octokit = github.getOctokit(token);
-        const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: format(output) });
+function postComment(ghToken_1, diveOutput_1) {
+    return __awaiter(this, arguments, void 0, function* (ghToken, diveOutput, customLeadingComment = []) {
+        const octokit = github.getOctokit(ghToken);
+        const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: composeComment(diveOutput, customLeadingComment) });
         yield octokit.rest.issues.createComment(comment);
     });
 }
@@ -136,8 +136,8 @@ function run() {
             // Convert always-comment input to boolean value.
             // All values other than 'true' are considered false.
             const alwaysComment = core.getInput('always-comment').toLowerCase() === 'true';
-            const token = core.getInput('github-token');
-            if (alwaysComment && !token) {
+            const ghToken = core.getInput('github-token');
+            if (alwaysComment && !ghToken) {
                 error('"always-comment" parameter requires "github-token" to be set.');
             }
             const diveRepo = core.getInput('dive-image-registry');
@@ -170,33 +170,36 @@ function run() {
             if (hasConfigFile) {
                 parameters.push('--ci-config', '/.dive-ci');
             }
-            let output = '';
+            let diveOutput = '';
             const execOptions = {
                 ignoreReturnCode: true,
                 listeners: {
                     stdout: (data) => {
-                        output += data.toString();
+                        diveOutput += data.toString();
                     },
                     stderr: (data) => {
-                        output += data.toString();
+                        diveOutput += data.toString();
                     }
                 }
             };
             const exitCode = yield exec.exec('docker', parameters, execOptions);
             const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`;
             if (alwaysComment) {
-                yield postComment(token, output);
+                yield postComment(ghToken, diveOutput);
                 if (exitCode === 0)
                     return;
                 error(scanFailedErrorMsg);
             }
             if (exitCode === 0)
                 return;
-            if (!token) {
+            if (!ghToken) {
                 error(`Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
                     'a PR comment, please provide the github-token in the action inputs.');
             }
-            yield postComment(token, output);
+            yield postComment(ghToken, diveOutput, [
+                '> [!WARNING]',
+                '> The container image has inefficient files.'
+            ]);
             error(scanFailedErrorMsg);
         }
         catch (e) {

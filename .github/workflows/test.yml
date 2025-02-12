@@ -193,3 +193,22 @@ jobs:
           image: ${{ env.TEST_IMAGE }}
           always-comment: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: '[Verification] Params: always-comment with github-token'
+        if: github.ref != 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Wait briefly for the comment to be posted
+          sleep 5
+
+          # Get the PR number
+          pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+
+          # Check if the comment exists
+          gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" \
+            --jq 'any(.body | contains("Dive Summary"))' || {
+            echo "Expected comment not found in PR"
+            exit 1
+          }

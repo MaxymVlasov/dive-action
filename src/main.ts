@@ -5,18 +5,21 @@ import * as github from '@actions/github'
 import stripAnsi from 'strip-ansi'
 import fs from 'fs'
 
-function format(output: string): string {
-  const ret = ['**The container image has inefficient files.**']
+function composeComment(
+  diveOutput: string,
+  customLeadingComment: string[]
+): string {
+  const ret = customLeadingComment
   let summarySection = false
   let inefficientFilesSection = false
   let resultSection = false
 
-  for (const line of output.split('\n')) {
+  for (const line of diveOutput.split('\n')) {
     if (line.includes('Analyzing image')) {
       summarySection = true
       inefficientFilesSection = false
       resultSection = false
-      ret.push('### Summary')
+      ret.push('### Dive Summary')
     } else if (line.includes('Inefficient Files:')) {
       summarySection = false
       inefficientFilesSection = true
@@ -50,12 +53,16 @@ function error(message: string): void {
   process.exit(1)
 }
 
-async function postComment(token: string, output: string): Promise<void> {
-  const octokit = github.getOctokit(token)
+async function postComment(
+  ghToken: string,
+  diveOutput: string,
+  customLeadingComment: string[] = []
+): Promise<void> {
+  const octokit = github.getOctokit(ghToken)
   const comment = {
     ...github.context.issue,
     issue_number: github.context.issue.number,
-    body: format(output)
+    body: composeComment(diveOutput, customLeadingComment)
   }
   await octokit.rest.issues.createComment(comment)
 }
@@ -86,9 +93,9 @@ async function run(): Promise<void> {
     // All values other than 'true' are considered false.
     const alwaysComment =
       core.getInput('always-comment').toLowerCase() === 'true'
-    const token = core.getInput('github-token')
+    const ghToken = core.getInput('github-token')
 
-    if (alwaysComment && !token) {
+    if (alwaysComment && !ghToken) {
       error('"always-comment" parameter requires "github-token" to be set.')
     }
 
@@ -131,15 +138,15 @@ async function run(): Promise<void> {
     if (hasConfigFile) {
       parameters.push('--ci-config', '/.dive-ci')
     }
-    let output = ''
+    let diveOutput = ''
     const execOptions = {
       ignoreReturnCode: true,
       listeners: {
         stdout: (data: Buffer) => {
-          output += data.toString()
+          diveOutput += data.toString()
         },
         stderr: (data: Buffer) => {
-          output += data.toString()
+          diveOutput += data.toString()
         }
       }
     }
@@ -148,7 +155,7 @@ async function run(): Promise<void> {
     const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`
 
     if (alwaysComment) {
-      await postComment(token, output)
+      await postComment(ghToken, diveOutput)
 
       if (exitCode === 0) return
 
@@ -157,14 +164,17 @@ async function run(): Promise<void> {
 
     if (exitCode === 0) return
 
-    if (!token) {
+    if (!ghToken) {
       error(
         `Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
           'a PR comment, please provide the github-token in the action inputs.'
       )
     }
 
-    await postComment(token, output)
+    await postComment(ghToken, diveOutput, [
+      '> [!WARNING]',
+      '> The container image has inefficient files.'
+    ])
 
     error(scanFailedErrorMsg)
   } catch (e) {
