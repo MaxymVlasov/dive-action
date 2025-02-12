@@ -205,10 +205,12 @@ jobs:
 
           # Get the PR number
           pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR number: $pr_number"
 
           # Check if the comment exists
           comment_id=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" \
             --jq '.[] | select(.body | contains("Dive Summary")) | .id')
+          echo "Comment ID: $comment_id"
 
           if [ -z "$comment_id" ]; then
             echo "Expected comment not found in PR"
