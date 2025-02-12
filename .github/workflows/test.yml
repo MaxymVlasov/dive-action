@@ -201,7 +201,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Wait briefly for the comment to be posted
-          sleep 5
+          sleep 2
 
           # Get the PR number
           pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
