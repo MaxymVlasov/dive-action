@@ -127,7 +127,9 @@ async function run(): Promise<void> {
     }
     const exitCode = await exec.exec('docker', parameters, execOptions)
     core.info(`Exit Code: ${exitCode}, Always Comment: ${alwaysComment}`)
-
+    core.info(
+      `Always Comment input: ${core.getInput('always-comment')}, type: ${typeof core.getInput('always-comment')}`
+    )
     if (exitCode === 0 && !alwaysComment) {
       // success
       return
