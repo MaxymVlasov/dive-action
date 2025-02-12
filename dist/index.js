@@ -122,7 +122,9 @@ function run() {
         try {
             const image = core.getInput('image');
             const configFile = core.getInput('config-file');
-            const alwaysComment = Boolean(core.getInput('always-comment'));
+            // Convert always-comment input to boolean value.
+            // All values other than 'true' are considered false.
+            const alwaysComment = core.getInput('always-comment').toLowerCase() === 'true';
             const diveRepo = core.getInput('dive-image-registry');
             // Validate Docker image name format
             if (!/^[\w.\-_/]+$/.test(diveRepo)) {
