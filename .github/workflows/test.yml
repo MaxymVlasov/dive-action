@@ -205,9 +205,8 @@ jobs:
           echo "PR number: $pr_number"
 
           # Check if the comment exists and get the latest comment ID
-          comment_id=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" \
-            --jq 'sort_by(.created_at) | reverse | .[0] \
-              | select(.body | contains("Dive Summary")) | .id')
+          comment_id=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
+          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Dive Summary")) | .id')
           echo "Comment ID: $comment_id"
 
           if [ -z "$comment_id" ]; then
