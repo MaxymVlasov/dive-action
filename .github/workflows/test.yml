@@ -129,7 +129,8 @@ jobs:
       - name: '[Verification] Negative test: Missing required image parameter'
         # It will not be able to create comment outside PR. result in main branch:
         # Not Found - https://docs.github.com/rest
-        if: always() && steps.pre-setup.outcome == 'success' && github.ref != 'refs/heads/main'
+        if: always() && steps.pre-setup.outcome == 'success' && github.ref !=
+          'refs/heads/main'
         shell: bash
         run: |
           error_message="${{ steps.missing-required.outputs.error }}"
