@@ -138,8 +138,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.missing-required.outputs.error }}"
-          expected_message="Resource not accessible by integration - \
-          https://docs.github.com/rest/issues/comments#create-an-issue-comment"
+          expected_message="Missing required parameter: image"
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
