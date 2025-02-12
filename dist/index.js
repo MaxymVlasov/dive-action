@@ -167,7 +167,7 @@ function run() {
                 }
             };
             const exitCode = yield exec.exec('docker', parameters, execOptions);
-            core.setOutput('info', `exitCode: ${exitCode}, alwaysComment: ${alwaysComment}`);
+            core.info(`Exit Code: ${exitCode}, Always Comment: ${alwaysComment}`);
             if (exitCode === 0 && !alwaysComment) {
                 // success
                 return;
