@@ -212,3 +212,7 @@ jobs:
             echo "Expected comment not found in PR"
             exit 1
           }
+
+          # Resolve the comment
+          gh api -X PATCH "repos/${{ github.repository }}/issues/comments/${comment_id}" \
+            -f body="Dive Summary"
