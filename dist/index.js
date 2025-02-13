@@ -60,9 +60,9 @@ const strip_ansi_1 = __importDefault(__nccwpck_require__(348));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
 function formatTableRow(line) {
     // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
-    const count = line.slice(0, 5).trim();
-    const wastedSpace = line.slice(7, 19).trim();
-    const filePath = line.slice(21).trim();
+    const count = line.slice(0, 5);
+    const wastedSpace = line.slice(7, 19);
+    const filePath = line.slice(21);
     return `| ${count} | ${wastedSpace} | ${filePath} |`;
 }
 function composeComment(diveOutput, customLeadingComment) {
