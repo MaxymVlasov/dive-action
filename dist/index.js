@@ -58,49 +58,61 @@ const exec = __importStar(__nccwpck_require__(5236));
 const github = __importStar(__nccwpck_require__(3228));
 const strip_ansi_1 = __importDefault(__nccwpck_require__(348));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
-function format(output) {
-    const ret = ['**The container image has inefficient files.**'];
+function formatTableRow(line) {
+    // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
+    const count = line.slice(0, 5).trim();
+    const wastedSpace = line.slice(7, 19).trim();
+    const filePath = line.slice(21).trim();
+    return `| ${count} | ${wastedSpace} | ${filePath} |`;
+}
+function composeComment(diveOutput, customLeadingComment) {
+    const ret = customLeadingComment;
     let summarySection = false;
     let inefficientFilesSection = false;
     let resultSection = false;
-    for (const line of output.split('\n')) {
-        if (line.includes('Analyzing image')) {
-            summarySection = true;
-            inefficientFilesSection = false;
-            resultSection = false;
-            ret.push('### Summary');
-        }
-        else if (line.includes('Inefficient Files:')) {
-            summarySection = false;
-            inefficientFilesSection = true;
-            resultSection = false;
-            ret.push('### Inefficient Files');
-        }
-        else if (line.includes('Results:')) {
-            summarySection = false;
-            inefficientFilesSection = false;
-            resultSection = true;
-            ret.push('### Results');
-        }
-        else if (summarySection || resultSection) {
-            ret.push((0, strip_ansi_1.default)(line));
-        }
-        else if (inefficientFilesSection) {
-            if (line.startsWith('Count')) {
-                ret.push('| Count | Wasted Space | File Path |');
-                ret.push('|---|---|---|');
-            }
-            else {
-                // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
-                ret.push(`| ${line.slice(0, 5)} | ${line.slice(7, 19)} | ${line.slice(21)} |`);
-            }
+    for (const line of diveOutput.split('\n')) {
+        switch (true) {
+            case line.includes('Analyzing image'):
+                summarySection = true;
+                ret.push('### Dive Summary');
+                break;
+            case line.includes('Inefficient Files:'):
+                inefficientFilesSection = true;
+                ret.push('### Inefficient Files');
+                break;
+            case line.includes('Results:'):
+                resultSection = true;
+                ret.push('### Results');
+                break;
+            case summarySection || resultSection:
+                ret.push((0, strip_ansi_1.default)(line));
+                break;
+            case inefficientFilesSection:
+                if (line.startsWith('Count')) {
+                    ret.push('| Count | Wasted Space | File Path |');
+                    ret.push('|---|---|---|');
+                }
+                else {
+                    ret.push(formatTableRow(line));
+                }
+                break;
+            default:
+                break;
         }
     }
     return ret.join('\n');
 }
+function postComment(ghToken_1, diveOutput_1) {
+    return __awaiter(this, arguments, void 0, function* (ghToken, diveOutput, customLeadingComment = []) {
+        const octokit = github.getOctokit(ghToken);
+        const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: composeComment(diveOutput, customLeadingComment) });
+        yield octokit.rest.issues.createComment(comment);
+    });
+}
 function error(message) {
     core.setOutput('error', message);
     core.setFailed(message);
+    process.exit(1);
 }
 /**
  * Executes a Docker image analysis using the dive tool and handles the results.
@@ -123,13 +135,12 @@ function run() {
             const image = core.getInput('image');
             if (!image) {
                 error('Missing required parameter: image');
-                return;
             }
             const configFile = core.getInput('config-file');
             const diveRepo = core.getInput('dive-image-registry');
             // Validate Docker image name format
             if (!/^[\w.\-_/]+$/.test(diveRepo)) {
-                throw new Error('Invalid dive-image-registry format');
+                error('Invalid dive-image-registry format');
             }
             const diveVersion = core.getInput('dive-image-version');
             const diveImage = `${diveRepo}:${diveVersion}`;
@@ -156,15 +167,15 @@ function run() {
             if (hasConfigFile) {
                 parameters.push('--ci-config', '/.dive-ci');
             }
-            let output = '';
+            let diveOutput = '';
             const execOptions = {
                 ignoreReturnCode: true,
                 listeners: {
                     stdout: (data) => {
-                        output += data.toString();
+                        diveOutput += data.toString();
                     },
                     stderr: (data) => {
-                        output += data.toString();
+                        diveOutput += data.toString();
                     }
                 }
             };
@@ -173,15 +184,15 @@ function run() {
                 // success
                 return;
             }
-            const token = core.getInput('github-token');
-            if (!token) {
+            const ghToken = core.getInput('github-token');
+            if (!ghToken) {
                 error(`Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
                     'as a PR comment, please provide the github-token in the action inputs.');
-                return;
             }
-            const octokit = github.getOctokit(token);
-            const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: format(output) });
-            yield octokit.rest.issues.createComment(comment);
+            yield postComment(ghToken, diveOutput, [
+                '> [!WARNING]',
+                '> The container image has inefficient files.'
+            ]);
             error(`Scan failed (exit code: ${exitCode})`);
         }
         catch (e) {
