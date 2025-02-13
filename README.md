@@ -153,7 +153,7 @@ Result:FAIL [Total:3] [Passed:2] [Failed:1] [Warn:0] [Skipped:0]
 
 This action was originally created by [Yuichi Tanaka](https://github.com/yuichielectric), but [upstream](https://github.com/yuichielectric/dive-action/) not maintained since 2020.
 
-Now it supported by [Maksym Vlasov](https://github.com/maxymvlaosv) with help from these awesome contributors:
+Now it supported by [Maksym Vlasov](https://github.com/maxymvlasov) with help from these awesome contributors:
 
 <a href="https://github.com/MaxymVlasov/dive-action/graphs/contributors">
   <img alt="Contributors" src="https://contrib.rocks/image?repo=MaxymVlasov/dive-action" />
