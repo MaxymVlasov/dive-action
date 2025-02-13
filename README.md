@@ -1,19 +1,34 @@
 # dive action
 
-[![Release][release-badge]][release]
-[![GitHub Marketplace][marketplace-badge]][marketplace]
-[![License][license-badge]][license]
+[![Release][release-badge]](https://github.com/maxymvlasov/dive-action/releases/latest)
+[![GitHub Marketplace][marketplace-badge]](https://github.com/marketplace/actions/dive-action-v2)
+[![License][license-badge]](https://github.com/maxymvlasov/dive-action/blob/master/LICENSE)
 
-!["./pr-comment.png"](pr-comment.png)
-
+[release-badge]: https://img.shields.io/github/release/maxymvlasov/dive-action.svg?logo=github&color=green
+[marketplace-badge]: https://img.shields.io/badge/marketplace-dive--action--v2-green?logo=github
+[license-badge]: https://img.shields.io/github/license/maxymvlasov/dive-action.svg
 
 dive action is an action that allows developers who develop Docker image to run
-[dive](https://github.com/joschi/dive) on GitHub Actions. dive is a tool for
+[dive](https://github.com/joschi/dive) on GitHub Actions.
+
+`dive` is a tool for
 exploring a docker image, layer contents, and discovering ways to shrink the
 size of your Docker/OCI image. Integrating dive into your CI will let you
 reduce your container image size as early as possible.
 
-## **Usage**
+
+![Example PR comment](docs/pr-comment.png)
+
+
+
+* [Usage](#usage)
+  * [Inputs](#inputs)
+  * [Workflow](#workflow)
+  * [Config file](#config-file)
+  * [Output](#output)
+* [Authors](#authors)
+
+## Usage
 
 ### Inputs
 
@@ -134,9 +149,12 @@ Result:FAIL [Total:3] [Passed:2] [Failed:1] [Warn:0] [Skipped:0]
 ##[error]Process completed with exit code 1.
 ```
 
-[release]: https://github.com/maxymvlasov/dive-action/releases/latest
-[release-badge]: https://img.shields.io/github/release/maxymvlasov/dive-action.svg?logo=github&color=green
-[marketplace]: https://github.com/marketplace/actions/dive-action-v2
-[marketplace-badge]: https://img.shields.io/badge/marketplace-dive--action--v2-green?logo=github
-[license]: https://github.com/maxymvlasov/dive-action/blob/master/LICENSE
-[license-badge]: https://img.shields.io/github/license/maxymvlasov/dive-action.svg
+## Authors
+
+This action was originally created by [Yuichi Tanaka](https://github.com/yuichielectric), but [upstream](https://github.com/yuichielectric/dive-action/) not maintained since 2020.
+
+Now it supported by [Maksym Vlasov](https://github.com/maxymvlasov) with help from these awesome contributors:
+
+<a href="https://github.com/MaxymVlasov/dive-action/graphs/contributors">
+  <img alt="Contributors" src="https://contrib.rocks/image?repo=MaxymVlasov/dive-action" />
+</a>
