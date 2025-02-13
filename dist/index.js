@@ -58,50 +58,55 @@ const exec = __importStar(__nccwpck_require__(5236));
 const github = __importStar(__nccwpck_require__(3228));
 const strip_ansi_1 = __importDefault(__nccwpck_require__(348));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
+function formatTableRow(line) {
+    // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
+    const count = line.slice(0, 5);
+    const wastedSpace = line.slice(7, 19);
+    const filePath = line.slice(21);
+    return `| ${count} | ${wastedSpace} | ${filePath} |`;
+}
 function composeComment(diveOutput, customLeadingComment) {
     const ret = customLeadingComment;
     let summarySection = false;
     let inefficientFilesSection = false;
     let resultSection = false;
     for (const line of diveOutput.split('\n')) {
-        if (line.includes('Analyzing image')) {
-            summarySection = true;
-            inefficientFilesSection = false;
-            resultSection = false;
-            ret.push('### Dive Summary');
-        }
-        else if (line.includes('Inefficient Files:')) {
-            summarySection = false;
-            inefficientFilesSection = true;
-            resultSection = false;
-            ret.push('### Inefficient Files');
-        }
-        else if (line.includes('Results:')) {
-            summarySection = false;
-            inefficientFilesSection = false;
-            resultSection = true;
-            ret.push('### Results');
-        }
-        else if (summarySection || resultSection) {
-            ret.push((0, strip_ansi_1.default)(line));
-        }
-        else if (inefficientFilesSection) {
-            if (line.startsWith('Count')) {
-                ret.push('| Count | Wasted Space | File Path |');
-                ret.push('|---|---|---|');
-            }
-            else {
-                // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
-                ret.push(`| ${line.slice(0, 5)} | ${line.slice(7, 19)} | ${line.slice(21)} |`);
-            }
+        switch (true) {
+            case line.includes('Analyzing image'):
+                summarySection = true;
+                inefficientFilesSection = false;
+                resultSection = false;
+                ret.push('### Dive Summary');
+                break;
+            case line.includes('Inefficient Files:'):
+                summarySection = false;
+                inefficientFilesSection = true;
+                resultSection = false;
+                ret.push('### Inefficient Files');
+                break;
+            case line.includes('Results:'):
+                summarySection = false;
+                inefficientFilesSection = false;
+                resultSection = true;
+                ret.push('### Results');
+                break;
+            case summarySection || resultSection:
+                ret.push((0, strip_ansi_1.default)(line));
+                break;
+            case inefficientFilesSection:
+                if (line.startsWith('Count')) {
+                    ret.push('| Count | Wasted Space | File Path |');
+                    ret.push('|---|---|---|');
+                }
+                else {
+                    ret.push(formatTableRow(line));
+                }
+                break;
+            default:
+                break;
         }
     }
     return ret.join('\n');
-}
-function error(message) {
-    core.setOutput('error', message);
-    core.setFailed(message);
-    process.exit(1);
 }
 function postComment(ghToken_1, diveOutput_1) {
     return __awaiter(this, arguments, void 0, function* (ghToken, diveOutput, customLeadingComment = []) {
@@ -109,6 +114,11 @@ function postComment(ghToken_1, diveOutput_1) {
         const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: composeComment(diveOutput, customLeadingComment) });
         yield octokit.rest.issues.createComment(comment);
     });
+}
+function error(message) {
+    core.setOutput('error', message);
+    core.setFailed(message);
+    process.exit(1);
 }
 /**
  * Executes a Docker image analysis using the dive tool and handles the results.

@@ -5,6 +5,14 @@ import * as github from '@actions/github'
 import stripAnsi from 'strip-ansi'
 import fs from 'fs'
 
+function formatTableRow(line: string): string {
+  // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
+  const count = line.slice(0, 5)
+  const wastedSpace = line.slice(7, 19)
+  const filePath = line.slice(21)
+  return `| ${count} | ${wastedSpace} | ${filePath} |`
+}
+
 function composeComment(
   diveOutput: string,
   customLeadingComment: string[]
@@ -15,42 +23,47 @@ function composeComment(
   let resultSection = false
 
   for (const line of diveOutput.split('\n')) {
-    if (line.includes('Analyzing image')) {
-      summarySection = true
-      inefficientFilesSection = false
-      resultSection = false
-      ret.push('### Dive Summary')
-    } else if (line.includes('Inefficient Files:')) {
-      summarySection = false
-      inefficientFilesSection = true
-      resultSection = false
-      ret.push('### Inefficient Files')
-    } else if (line.includes('Results:')) {
-      summarySection = false
-      inefficientFilesSection = false
-      resultSection = true
-      ret.push('### Results')
-    } else if (summarySection || resultSection) {
-      ret.push(stripAnsi(line))
-    } else if (inefficientFilesSection) {
-      if (line.startsWith('Count')) {
-        ret.push('| Count | Wasted Space | File Path |')
-        ret.push('|---|---|---|')
-      } else {
-        // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
-        ret.push(
-          `| ${line.slice(0, 5)} | ${line.slice(7, 19)} | ${line.slice(21)} |`
-        )
-      }
+    switch (true) {
+      case line.includes('Analyzing image'):
+        summarySection = true
+        inefficientFilesSection = false
+        resultSection = false
+        ret.push('### Dive Summary')
+        break
+
+      case line.includes('Inefficient Files:'):
+        summarySection = false
+        inefficientFilesSection = true
+        resultSection = false
+        ret.push('### Inefficient Files')
+        break
+
+      case line.includes('Results:'):
+        summarySection = false
+        inefficientFilesSection = false
+        resultSection = true
+        ret.push('### Results')
+        break
+
+      case summarySection || resultSection:
+        ret.push(stripAnsi(line))
+        break
+
+      case inefficientFilesSection:
+        if (line.startsWith('Count')) {
+          ret.push('| Count | Wasted Space | File Path |')
+          ret.push('|---|---|---|')
+        } else {
+          ret.push(formatTableRow(line))
+        }
+        break
+
+      default:
+        break
     }
   }
-  return ret.join('\n')
-}
 
-function error(message: string): void {
-  core.setOutput('error', message)
-  core.setFailed(message)
-  process.exit(1)
+  return ret.join('\n')
 }
 
 async function postComment(
@@ -65,6 +78,12 @@ async function postComment(
     body: composeComment(diveOutput, customLeadingComment)
   }
   await octokit.rest.issues.createComment(comment)
+}
+
+function error(message: string): void {
+  core.setOutput('error', message)
+  core.setFailed(message)
+  process.exit(1)
 }
 
 /**
@@ -170,7 +189,6 @@ async function run(): Promise<void> {
           'a PR comment, please provide the github-token in the action inputs.'
       )
     }
-
     await postComment(ghToken, diveOutput, [
       '> [!WARNING]',
       '> The container image has inefficient files.'
