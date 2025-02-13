@@ -73,13 +73,19 @@ function composeComment(diveOutput, customLeadingComment) {
     for (const line of diveOutput.split('\n')) {
         if (line.includes('Analyzing image')) {
             summarySection = true;
+            inefficientFilesSection = false;
+            resultSection = false;
             ret.push('### Dive Summary');
         }
         else if (line.includes('Inefficient Files:')) {
+            summarySection = false;
             inefficientFilesSection = true;
+            resultSection = false;
             ret.push('### Inefficient Files');
         }
         else if (line.includes('Results:')) {
+            summarySection = false;
+            inefficientFilesSection = false;
             resultSection = true;
             ret.push('### Results');
         }
