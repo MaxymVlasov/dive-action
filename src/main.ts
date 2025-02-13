@@ -5,48 +5,85 @@ import * as github from '@actions/github'
 import stripAnsi from 'strip-ansi'
 import fs from 'fs'
 
-function format(output: string): string {
-  const ret = ['**The container image has inefficient files.**']
+function formatTableRow(line: string): string {
+  // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
+  const count = line.slice(0, 5)
+  const wastedSpace = line.slice(7, 19)
+  const filePath = line.slice(21)
+  return `| ${count} | ${wastedSpace} | ${filePath} |`
+}
+
+function composeComment(
+  diveOutput: string,
+  customLeadingComment: string[]
+): string {
+  const ret = customLeadingComment
   let summarySection = false
   let inefficientFilesSection = false
   let resultSection = false
 
-  for (const line of output.split('\n')) {
-    if (line.includes('Analyzing image')) {
-      summarySection = true
-      inefficientFilesSection = false
-      resultSection = false
-      ret.push('### Summary')
-    } else if (line.includes('Inefficient Files:')) {
-      summarySection = false
-      inefficientFilesSection = true
-      resultSection = false
-      ret.push('### Inefficient Files')
-    } else if (line.includes('Results:')) {
-      summarySection = false
-      inefficientFilesSection = false
-      resultSection = true
-      ret.push('### Results')
-    } else if (summarySection || resultSection) {
-      ret.push(stripAnsi(line))
-    } else if (inefficientFilesSection) {
-      if (line.startsWith('Count')) {
-        ret.push('| Count | Wasted Space | File Path |')
-        ret.push('|---|---|---|')
-      } else {
-        // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
-        ret.push(
-          `| ${line.slice(0, 5)} | ${line.slice(7, 19)} | ${line.slice(21)} |`
-        )
-      }
+  for (const line of diveOutput.split('\n')) {
+    switch (true) {
+      case line.includes('Analyzing image'):
+        summarySection = true
+        inefficientFilesSection = false
+        resultSection = false
+        ret.push('### Dive Summary')
+        break
+
+      case line.includes('Inefficient Files:'):
+        summarySection = false
+        inefficientFilesSection = true
+        resultSection = false
+        ret.push('### Inefficient Files')
+        break
+
+      case line.includes('Results:'):
+        summarySection = false
+        inefficientFilesSection = false
+        resultSection = true
+        ret.push('### Results')
+        break
+
+      case summarySection || resultSection:
+        ret.push(stripAnsi(line))
+        break
+
+      case inefficientFilesSection:
+        if (line.startsWith('Count')) {
+          ret.push('| Count | Wasted Space | File Path |')
+          ret.push('|---|---|---|')
+        } else {
+          ret.push(formatTableRow(line))
+        }
+        break
+
+      default:
+        break
     }
   }
+
   return ret.join('\n')
+}
+
+async function postComment(
+  ghToken: string,
+  diveOutput: string,
+  customLeadingComment: string[] = []
+): Promise<void> {
+  const octokit = github.getOctokit(ghToken)
+  const comment = {
+    ...github.context.issue,
+    issue_number: github.context.issue.number,
+    body: composeComment(diveOutput, customLeadingComment)
+  }
+  await octokit.rest.issues.createComment(comment)
 }
 
 function error(message: string): void {
   core.setOutput('error', message)
   core.setFailed(message)
+  process.exit(1)
 }
 
 /**
@@ -69,14 +106,13 @@ async function run(): Promise<void> {
     const image = core.getInput('image')
     if (!image) {
       error('Missing required parameter: image')
-      return
     }
     const configFile = core.getInput('config-file')
 
     const diveRepo = core.getInput('dive-image-registry')
     // Validate Docker image name format
     if (!/^[\w.\-_/]+$/.test(diveRepo)) {
-      throw new Error('Invalid dive-image-registry format')
+      error('Invalid dive-image-registry format')
     }
     const diveVersion = core.getInput('dive-image-version')
     const diveImage = `${diveRepo}:${diveVersion}`
@@ -112,15 +148,15 @@ async function run(): Promise<void> {
     if (hasConfigFile) {
       parameters.push('--ci-config', '/.dive-ci')
     }
-    let output = ''
+    let diveOutput = ''
     const execOptions = {
       ignoreReturnCode: true,
       listeners: {
         stdout: (data: Buffer) => {
-          output += data.toString()
+          diveOutput += data.toString()
         },
         stderr: (data: Buffer) => {
-          output += data.toString()
+          diveOutput += data.toString()
         }
       }
     }
@@ -130,21 +166,18 @@ async function run(): Promise<void> {
       return
     }
 
-    const token = core.getInput('github-token')
-    if (!token) {
+    const ghToken = core.getInput('github-token')
+    if (!ghToken) {
       error(
         `Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
           'as a PR comment, please provide the github-token in the action inputs.'
       )
-      return
     }
-    const octokit = github.getOctokit(token)
-    const comment = {
-      ...github.context.issue,
-      issue_number: github.context.issue.number,
-      body: format(output)
-    }
-    await octokit.rest.issues.createComment(comment)
+    await postComment(ghToken, diveOutput, [
+      '> [!WARNING]',
+      '> The container image has inefficient files.'
+    ])
+
     error(`Scan failed (exit code: ${exitCode})`)
   } catch (e) {
     error(e instanceof Error ? e.message : String(e))
