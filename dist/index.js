@@ -71,35 +71,39 @@ function composeComment(diveOutput, customLeadingComment) {
     let inefficientFilesSection = false;
     let resultSection = false;
     for (const line of diveOutput.split('\n')) {
-        if (line.includes('Analyzing image')) {
-            summarySection = true;
-            inefficientFilesSection = false;
-            resultSection = false;
-            ret.push('### Dive Summary');
-        }
-        else if (line.includes('Inefficient Files:')) {
-            summarySection = false;
-            inefficientFilesSection = true;
-            resultSection = false;
-            ret.push('### Inefficient Files');
-        }
-        else if (line.includes('Results:')) {
-            summarySection = false;
-            inefficientFilesSection = false;
-            resultSection = true;
-            ret.push('### Results');
-        }
-        else if (summarySection || resultSection) {
-            ret.push((0, strip_ansi_1.default)(line));
-        }
-        else if (inefficientFilesSection) {
-            if (line.startsWith('Count')) {
-                ret.push('| Count | Wasted Space | File Path |');
-                ret.push('|---|---|---|');
-            }
-            else {
-                ret.push(formatTableRow(line));
-            }
+        switch (true) {
+            case line.includes('Analyzing image'):
+                summarySection = true;
+                inefficientFilesSection = false;
+                resultSection = false;
+                ret.push('### Dive Summary');
+                break;
+            case line.includes('Inefficient Files:'):
+                summarySection = false;
+                inefficientFilesSection = true;
+                resultSection = false;
+                ret.push('### Inefficient Files');
+                break;
+            case line.includes('Results:'):
+                summarySection = false;
+                inefficientFilesSection = false;
+                resultSection = true;
+                ret.push('### Results');
+                break;
+            case summarySection || resultSection:
+                ret.push((0, strip_ansi_1.default)(line));
+                break;
+            case inefficientFilesSection:
+                if (line.startsWith('Count')) {
+                    ret.push('| Count | Wasted Space | File Path |');
+                    ret.push('|---|---|---|');
+                }
+                else {
+                    ret.push(formatTableRow(line));
+                }
+                break;
+            default:
+                break;
         }
     }
     return ret.join('\n');
