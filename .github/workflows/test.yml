@@ -21,6 +21,10 @@ jobs:
     env:
       TEST_IMAGE: ghcr.io/joschi/dive:latest
 
+    permissions:
+      # 'Params: always-comment with github-token' step to push a comment to PR
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
@@ -145,3 +149,71 @@ jobs:
             echo "Expected step to fail"
             exit 1
           fi
+
+      # Verifies that the action properly handles missing GitHub token when
+      # always-comment is true. Expected to fail as posting comments requires
+      # GitHub token authentication
+      - name: '[Run] Negative test: always-comment w/o github-token'
+        id: always-comment-missing-github-token
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          always-comment: true
+
+      - name: '[Verification] Negative test: always-comment w/o github-token'
+        # It will not be able to create comment outside PR. result in main branch:
+        # Not Found - https://docs.github.com/rest
+        if: always() && steps.pre-setup.outcome == 'success' && github.ref !=
+          'refs/heads/main'
+        shell: bash
+        run: |
+          error_message="${{ steps.always-comment-missing-github-token.outputs.error }}"
+          expected_message='always-comment parameter requires github-token to be set.'
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.always-comment-missing-github-token.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
+      # Runs at the end and only when all other tests pass, as it posts the
+      # results as a comment on the PR
+      - name: 'Params: always-comment with github-token'
+        # It will not be able to create comment outside PR. result in main branch:
+        # Not Found - https://docs.github.com/rest
+        if: github.ref != 'refs/heads/main'
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          always-comment: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: '[Verification] Params: always-comment with github-token'
+        if: github.ref != 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the PR number
+          pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR number: $pr_number"
+
+          # Check if the comment exists and get the latest comment ID
+          comment_id=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
+          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Dive Summary")) | .id')
+          echo "Comment ID: $comment_id"
+
+          if [ -z "$comment_id" ]; then
+            echo "Expected comment not found in PR"
+            exit 1
+          fi
+
+          # Delete the comment after verification
+          gh api -X DELETE "repos/${{ github.repository }}/issues/comments/${comment_id}"
+          echo "Comment deleted"

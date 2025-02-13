@@ -143,6 +143,13 @@ function run() {
                 error('Missing required parameter: image');
             }
             const configFile = core.getInput('config-file');
+            // Convert always-comment input to boolean value.
+            // All values other than 'true' are considered false.
+            const alwaysComment = core.getInput('always-comment').toLowerCase() === 'true';
+            const ghToken = core.getInput('github-token');
+            if (alwaysComment && !ghToken) {
+                error('"always-comment" parameter requires "github-token" to be set.');
+            }
             const diveRepo = core.getInput('dive-image-registry');
             // Validate Docker image name format
             if (!/^[\w.\-_/]+$/.test(diveRepo)) {
@@ -186,20 +193,24 @@ function run() {
                 }
             };
             const exitCode = yield exec.exec('docker', parameters, execOptions);
-            if (exitCode === 0) {
-                // success
-                return;
+            const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`;
+            if (alwaysComment) {
+                yield postComment(ghToken, diveOutput);
+                if (exitCode === 0)
+                    return;
+                error(scanFailedErrorMsg);
             }
-            const ghToken = core.getInput('github-token');
+            if (exitCode === 0)
+                return;
             if (!ghToken) {
-                error(`Scan failed (exit code: ${exitCode}).\nTo post scan results ` +
-                    'as a PR comment, please provide the github-token in the action inputs.');
+                error(`Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
+                    'a PR comment, please provide the github-token in the action inputs.');
             }
             yield postComment(ghToken, diveOutput, [
                 '> [!WARNING]',
                 '> The container image has inefficient files.'
             ]);
-            error(`Scan failed (exit code: ${exitCode})`);
+            error(scanFailedErrorMsg);
         }
         catch (e) {
             error(e instanceof Error ? e.message : String(e));
