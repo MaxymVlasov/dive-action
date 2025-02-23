@@ -58,7 +58,6 @@ jobs:
         uses: MaxymVlasov/dive-action@v1.3.0
         with:
           image: sample:latest
-          config-file: ${{ github.workspace }}/.dive-ci.yml
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
