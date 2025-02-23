@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    // ECMAScript 2022 is the latest version of ECMAScript that is
+    // supported by the NodeJS 20 used in GHA
+    "target": "es2022",
     "lib": [
-      "ES2015"
+      "ES2022"
     ],
     "module": "commonjs",
     "outDir": "./lib",
