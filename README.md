@@ -22,25 +22,17 @@ reduce your container image size as early as possible.
 
 
 * [Usage](#usage)
-  * [Inputs](#inputs)
   * [Workflow](#workflow)
+  * [Inputs](#inputs)
+    * [Required](#required)
+    * [PR comments](#pr-comments)
+    * [Used dive image](#used-dive-image)
+    * [Dive configs](#dive-configs)
   * [Config file](#config-file)
   * [Output](#output)
 * [Authors](#authors)
 
 ## Usage
-
-### Inputs
-
-| Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type    | Required | Default                                                                                | Description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
-| ---------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| image               | String  | true  |                                                                                        | Image to analyze                                                                                                                                             |
-| always-comment      | Boolean | false | `false`                                                                                | Post dive analysis results as PR comment regardless of whether any inefficiencies were found. By default, comments are only posted when issues are detected. Requires `github-token` |
-| config-file         | String  | false | `${{ github.workspace }}/.dive.yaml`                                                   | Path to [dive config file](https://github.com/joschi/dive#ci-integration)                                                                                    |
-| github-token        | String  | false |                                                                                        | GitHub token to post PR comment with dive analysis                                                                                                              |
-| dive-image-registry | String  | false | `ghcr.io/joschi/dive`                                                                  | Docker registry to pull the Dive image from                                                                                                                  |
-| dive-image-version  | String  | false | `0.13.1@sha256:f016a4bd2837` `130545e391acee7876aa5f7258` `ccdb12640ab4afaffa1c597d17` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility |
-
 
 ### Workflow
 
@@ -74,6 +66,64 @@ For security reasons, I recommend pinning GitHub Action SHAs. You can use
 [Renovate](https://docs.renovatebot.com/) for this. The simplest way to start
 is by using [this preset](https://github.com/SpotOnInc/renovate-config/) that I
 created.
+
+
+### Inputs
+
+<details><summary>All in alpabetical order</summary>
+
+| Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type    | Required | Default                                                                                | Description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+| ---------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| image                                                                                                                              | String  | true     |                                                                                        | Image to analyze                                                                                                                                                                                                                                                                                                                                                                                |
+| always-comment                                                                                                                     | Boolean | false    | `false`                                                                                | Post dive analysis results as PR comment regardless of whether any inefficiencies were found. By default, comments are only posted when issues are detected. Requires `github-token`                                                                                                                                                                                                            |
+| config-file                                                                                                                        | String  | false    | `${{ github.workspace }}/.dive.yaml`                                                   | Path to [dive config file](https://github.com/joschi/dive#ci-integration).  If not provided, default Dive settings will be used. Individual parameters `min-image-efficiency`, `max-wasted-ratio`, and `max-wasted-bytes` can override settings specified in `config-file`.                                                                                                                     |
+| github-token                                                                                                                       | String  | false    |                                                                                        | GitHub token to post PR comment with dive analysis                                                                                                                                                                                                                                                                                                                                              |
+| dive-image-registry                                                                                                                | String  | false    | `ghcr.io/joschi/dive`                                                                  | Docker registry to pull the Dive image from                                                                                                                                                                                                                                                                                                                                                     |
+| dive-image-version                                                                                                                 | String  | false    | `0.13.1@sha256:f016a4bd2837` `130545e391acee7876aa5f7258` `ccdb12640ab4afaffa1c597d17` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility                                                                                                                                                                                                                                    |
+| highest-wasted-bytes                                                                                                               | String  | false    |                                                                                        | Threshold for the maximum allowed bytes wasted expressed in B, KB, MB and GB                                                                                                                                                                                                                                                                                                                    |
+| highest-user-wasted-ratio                                                                                                          | Float   | false    |                                                                                        | Threshold for the maximum allowed ratio wasted bytes as a function of total image size expressed as a ratio between 0-1. Note: the base image layer is NOT included in the total image size.                                                                                                                                                                                                    |
+| lowest-efficiency-ratio                                                                                                            | Float   | false    |                                                                                        | Threshold for the lowest allowed image efficiency ratio between 0-1                                                                                                                                                                                                                                                                                                                             |
+
+</details>
+
+
+#### Required
+
+| Name  | Type   | Required | Default | Description      |
+| ----- | ------ | -------- | ------- | ---------------- |
+| image | String | true     |         | Image to analyze |
+
+#### PR comments
+
+| Name           | Type    | Required | Default | Description                                                                                                                                                                          |
+| -------------- | ------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| always-comment | Boolean | false    | `false` | Post dive analysis results as PR comment regardless of whether any inefficiencies were found. By default, comments are only posted when issues are detected. Requires `github-token` |
+| github-token   | String  | false    |         | GitHub token to post PR comment with dive analysis                                                                                                                                   |
+
+#### Used dive image
+
+| Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type   | Required | Default                                                                                | Description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+| ---------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dive-image-registry                                                                                                                | String | false    | `ghcr.io/joschi/dive`                                                                  | Docker registry to pull the Dive image from                                                                                                                                                                                                                                                                                                                                                     |
+| dive-image-version                                                                                                                 | String | false    | `0.13.1@sha256:f016a4bd2837` `130545e391acee7876aa5f7258` `ccdb12640ab4afaffa1c597d17` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility                                                                                                                                                                                                                                    |
+
+#### Dive configs
+
+| Name                      | Type   | Required | Default                              | Description                                                                                                                                                                                                                                                                   |
+| ------------------------- | ------ | -------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| config-file               | String | false    | `${{ github.workspace }}/.dive.yaml` | Path to [dive config file](https://github.com/joschi/dive#ci-integration). If not provided, default Dive settings will be used.<br>Individual parameters `min-image-efficiency`, `max-wasted-ratio`, and `max-wasted-bytes` can override settings specified in `config-file`. |
+| highest-wasted-bytes      | String | false    |                                      | Threshold for the maximum allowed bytes wasted expressed in B, KB, MB and GB                                                                                                                                                                                                  |
+| highest-user-wasted-ratio | Float  | false    |                                      | Threshold for the maximum allowed ratio wasted bytes as a function of total image size expressed as a ratio between 0-1. Note: the base image layer is NOT included in the total image size.                                                                                  |
+| lowest-efficiency-ratio   | Float  | false    |                                      | Threshold for the lowest allowed image efficiency ratio between 0-1                                                                                                                                                                                                           |
+
+Dive settings priority:
+
+1. `highest-wasted-bytes`, `highest-user-wasted-ratio`, `lowest-efficiency-ratio`
+2. `config-file`
+3. Default dive settings:
+    * highestUserWastedPercent: 0.1
+    * highestWastedBytes: disabled
+    * lowestEfficiency: 0.9
 
 ### Config file
 

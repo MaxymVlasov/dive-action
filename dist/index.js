@@ -143,6 +143,9 @@ function run() {
                 error('Missing required parameter: image');
             }
             const configFile = core.getInput('config-file');
+            const highestWastedBytes = core.getInput('highest-wasted-bytes');
+            const highestUserWastedRatio = core.getInput('highest-user-wasted-ratio');
+            const lowestEfficiencyRatio = core.getInput('lowest-efficiency-ratio');
             // Convert always-comment input to boolean value.
             // All values other than 'true' are considered false.
             const alwaysComment = core.getInput('always-comment').toLowerCase() === 'true';
@@ -179,6 +182,15 @@ function run() {
             const parameters = ['run', ...commandOptions, diveImage, image];
             if (hasConfigFile) {
                 parameters.push('--ci-config', '/.dive-ci');
+            }
+            if (lowestEfficiencyRatio) {
+                commandOptions.push('--lowestEfficiency', lowestEfficiencyRatio);
+            }
+            if (highestUserWastedRatio) {
+                commandOptions.push('--highestUserWastedPercent', highestUserWastedRatio);
+            }
+            if (highestWastedBytes) {
+                commandOptions.push('--highestWastedBytes', highestWastedBytes);
             }
             let diveOutput = '';
             const execOptions = {

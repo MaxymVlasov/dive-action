@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TEST_IMAGE: ghcr.io/joschi/dive:latest
+      WASTED_IMAGE: python:3.13-slim-bookworm
 
     permissions:
       # 'Params: always-comment with github-token' step to push a comment to PR
@@ -65,6 +66,27 @@ jobs:
           dive-image-registry: ghcr.io/joschi/dive
           dive-image-version: >-
             0.14.0
+
+      - name: 'Params: highest-wasted-bytes, highest-user-wasted-percent, lowest-efficiency'
+        if: always() && steps.pre-setup.outcome == 'success'
+        uses: ./
+        with:
+          image: ${{ env.WASTED_IMAGE }}
+          highest-wasted-bytes: 100MB
+          highest-user-wasted-ratio: 0.5
+          lowest-efficiency: 0.9
+
+      - name: >-
+          Params: highest-wasted-bytes, highest-user-wasted-percent,
+          lowest-efficiency redefine config-file
+        if: always() && steps.pre-setup.outcome == 'success'
+        uses: ./
+        with:
+          image: ${{ env.WASTED_IMAGE }}
+          config-file: ${{ github.workspace }}/.github/.dive-ci.yaml
+          highest-wasted-bytes: 100MB
+          highest-user-wasted-ratio: 0.5
+          lowest-efficiency: 0.9
 
       # Verifies that the action properly handles and reports errors
       # when trying to analyze a non-existent Docker image
