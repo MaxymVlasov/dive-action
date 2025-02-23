@@ -39,15 +39,6 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -108,12 +99,14 @@ function composeComment(diveOutput, customLeadingComment) {
     }
     return ret.join('\n');
 }
-function postComment(ghToken_1, diveOutput_1) {
-    return __awaiter(this, arguments, void 0, function* (ghToken, diveOutput, customLeadingComment = []) {
-        const octokit = github.getOctokit(ghToken);
-        const comment = Object.assign(Object.assign({}, github.context.issue), { issue_number: github.context.issue.number, body: composeComment(diveOutput, customLeadingComment) });
-        yield octokit.rest.issues.createComment(comment);
-    });
+async function postComment(ghToken, diveOutput, customLeadingComment = []) {
+    const octokit = github.getOctokit(ghToken);
+    const comment = {
+        ...github.context.issue,
+        issue_number: github.context.issue.number,
+        body: composeComment(diveOutput, customLeadingComment)
+    };
+    await octokit.rest.issues.createComment(comment);
 }
 function error(message) {
     core.setOutput('error', message);
@@ -135,99 +128,97 @@ function error(message) {
  *
  * @beta
  */
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const image = core.getInput('image');
-            if (!image) {
-                error('Missing required parameter: image');
-            }
-            const configFile = core.getInput('config-file');
-            const highestWastedBytes = core.getInput('highest-wasted-bytes');
-            const highestUserWastedRatio = core.getInput('highest-user-wasted-ratio');
-            const lowestEfficiencyRatio = core.getInput('lowest-efficiency-ratio');
-            // Convert always-comment input to boolean value.
-            // All values other than 'true' are considered false.
-            const alwaysComment = core.getInput('always-comment').toLowerCase() === 'true';
-            const ghToken = core.getInput('github-token');
-            if (alwaysComment && !ghToken) {
-                error('"always-comment" parameter requires "github-token" to be set.');
-            }
-            const diveRepo = core.getInput('dive-image-registry');
-            // Validate Docker image name format
-            if (!/^[\w.\-_/]+$/.test(diveRepo)) {
-                error('Invalid dive-image-registry format');
-            }
-            const diveVersion = core.getInput('dive-image-version');
-            const diveImage = `${diveRepo}:${diveVersion}`;
-            yield exec.exec('docker', ['pull', diveImage]);
-            const commandOptions = [
-                '-e',
-                'CI=true',
-                '-e',
-                'DOCKER_API_VERSION=1.45',
-                '--rm',
-                '-v',
-                '/var/run/docker.sock:/var/run/docker.sock'
-            ];
-            const hasConfigFile = fs_1.default.existsSync(configFile);
-            const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`;
-            if (!hasConfigFile && configFile !== configFileDefaultPath) {
-                error(`Config file not found in the specified path '${configFile}'\n` +
-                    `github.workspace value is: '${process.env.GITHUB_WORKSPACE}'`);
-            }
-            if (hasConfigFile) {
-                commandOptions.push('--mount', `type=bind,source=${configFile},target=/.dive-ci`);
-            }
-            const parameters = ['run', ...commandOptions, diveImage, image];
-            if (hasConfigFile) {
-                parameters.push('--ci-config', '/.dive-ci');
-            }
-            if (lowestEfficiencyRatio) {
-                parameters.push('--lowestEfficiency', lowestEfficiencyRatio);
-            }
-            if (highestUserWastedRatio) {
-                parameters.push('--highestUserWastedPercent', highestUserWastedRatio);
-            }
-            if (highestWastedBytes) {
-                parameters.push('--highestWastedBytes', highestWastedBytes);
-            }
-            let diveOutput = '';
-            const execOptions = {
-                ignoreReturnCode: true,
-                listeners: {
-                    stdout: (data) => {
-                        diveOutput += data.toString();
-                    },
-                    stderr: (data) => {
-                        diveOutput += data.toString();
-                    }
+async function run() {
+    try {
+        const image = core.getInput('image');
+        if (!image) {
+            error('Missing required parameter: image');
+        }
+        const configFile = core.getInput('config-file');
+        const highestWastedBytes = core.getInput('highest-wasted-bytes');
+        const highestUserWastedRatio = core.getInput('highest-user-wasted-ratio');
+        const lowestEfficiencyRatio = core.getInput('lowest-efficiency-ratio');
+        // Convert always-comment input to boolean value.
+        // All values other than 'true' are considered false.
+        const alwaysComment = core.getInput('always-comment').toLowerCase() === 'true';
+        const ghToken = core.getInput('github-token');
+        if (alwaysComment && !ghToken) {
+            error('"always-comment" parameter requires "github-token" to be set.');
+        }
+        const diveRepo = core.getInput('dive-image-registry');
+        // Validate Docker image name format
+        if (!/^[\w.\-_/]+$/.test(diveRepo)) {
+            error('Invalid dive-image-registry format');
+        }
+        const diveVersion = core.getInput('dive-image-version');
+        const diveImage = `${diveRepo}:${diveVersion}`;
+        await exec.exec('docker', ['pull', diveImage]);
+        const commandOptions = [
+            '-e',
+            'CI=true',
+            '-e',
+            'DOCKER_API_VERSION=1.45',
+            '--rm',
+            '-v',
+            '/var/run/docker.sock:/var/run/docker.sock'
+        ];
+        const hasConfigFile = fs_1.default.existsSync(configFile);
+        const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`;
+        if (!hasConfigFile && configFile !== configFileDefaultPath) {
+            error(`Config file not found in the specified path '${configFile}'\n` +
+                `github.workspace value is: '${process.env.GITHUB_WORKSPACE}'`);
+        }
+        if (hasConfigFile) {
+            commandOptions.push('--mount', `type=bind,source=${configFile},target=/.dive-ci`);
+        }
+        const parameters = ['run', ...commandOptions, diveImage, image];
+        if (hasConfigFile) {
+            parameters.push('--ci-config', '/.dive-ci');
+        }
+        if (lowestEfficiencyRatio) {
+            parameters.push('--lowestEfficiency', lowestEfficiencyRatio);
+        }
+        if (highestUserWastedRatio) {
+            parameters.push('--highestUserWastedPercent', highestUserWastedRatio);
+        }
+        if (highestWastedBytes) {
+            parameters.push('--highestWastedBytes', highestWastedBytes);
+        }
+        let diveOutput = '';
+        const execOptions = {
+            ignoreReturnCode: true,
+            listeners: {
+                stdout: (data) => {
+                    diveOutput += data.toString();
+                },
+                stderr: (data) => {
+                    diveOutput += data.toString();
                 }
-            };
-            const exitCode = yield exec.exec('docker', parameters, execOptions);
-            const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`;
-            if (alwaysComment) {
-                yield postComment(ghToken, diveOutput);
-                if (exitCode === 0)
-                    return;
-                error(scanFailedErrorMsg);
             }
+        };
+        const exitCode = await exec.exec('docker', parameters, execOptions);
+        const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`;
+        if (alwaysComment) {
+            await postComment(ghToken, diveOutput);
             if (exitCode === 0)
                 return;
-            if (!ghToken) {
-                error(`Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
-                    'a PR comment, please provide the github-token in the action inputs.');
-            }
-            yield postComment(ghToken, diveOutput, [
-                '> [!WARNING]',
-                '> The container image has inefficient files.'
-            ]);
             error(scanFailedErrorMsg);
         }
-        catch (e) {
-            error(e instanceof Error ? e.message : String(e));
+        if (exitCode === 0)
+            return;
+        if (!ghToken) {
+            error(`Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
+                'a PR comment, please provide the github-token in the action inputs.');
         }
-    });
+        await postComment(ghToken, diveOutput, [
+            '> [!WARNING]',
+            '> The container image has inefficient files.'
+        ]);
+        error(scanFailedErrorMsg);
+    }
+    catch (e) {
+        error(e instanceof Error ? e.message : String(e));
+    }
 }
 run();
 
