@@ -163,13 +163,13 @@ async function run(): Promise<void> {
       parameters.push('--ci-config', '/.dive-ci')
     }
     if (lowestEfficiencyRatio) {
-      commandOptions.push('--lowestEfficiency', lowestEfficiencyRatio)
+      parameters.push('--lowestEfficiency', lowestEfficiencyRatio)
     }
     if (highestUserWastedRatio) {
-      commandOptions.push('--highestUserWastedPercent', highestUserWastedRatio)
+      parameters.push('--highestUserWastedPercent', highestUserWastedRatio)
     }
     if (highestWastedBytes) {
-      commandOptions.push('--highestWastedBytes', highestWastedBytes)
+      parameters.push('--highestWastedBytes', highestWastedBytes)
     }
 
     let diveOutput = ''
