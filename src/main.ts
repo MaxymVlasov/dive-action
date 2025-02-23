@@ -108,6 +108,10 @@ async function run(): Promise<void> {
       error('Missing required parameter: image')
     }
     const configFile = core.getInput('config-file')
+    const highestWastedBytes = core.getInput('highest-wasted-bytes')
+    const highestUserWastedRatio = core.getInput('highest-user-wasted-ratio')
+    const lowestEfficiencyRatio = core.getInput('lowest-efficiency-ratio')
+
     // Convert always-comment input to boolean value.
     // All values other than 'true' are considered false.
     const alwaysComment =
@@ -139,6 +143,7 @@ async function run(): Promise<void> {
 
     const hasConfigFile = fs.existsSync(configFile)
     const configFileDefaultPath = `${process.env.GITHUB_WORKSPACE}/.dive.yaml`
+
     if (!hasConfigFile && configFile !== configFileDefaultPath) {
       error(
         `Config file not found in the specified path '${configFile}'\n` +
@@ -157,6 +162,16 @@ async function run(): Promise<void> {
     if (hasConfigFile) {
       parameters.push('--ci-config', '/.dive-ci')
     }
+    if (lowestEfficiencyRatio) {
+      parameters.push('--lowestEfficiency', lowestEfficiencyRatio)
+    }
+    if (highestUserWastedRatio) {
+      parameters.push('--highestUserWastedPercent', highestUserWastedRatio)
+    }
+    if (highestWastedBytes) {
+      parameters.push('--highestWastedBytes', highestWastedBytes)
+    }
+
     let diveOutput = ''
     const execOptions = {
       ignoreReturnCode: true,

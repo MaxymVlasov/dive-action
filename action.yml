@@ -5,22 +5,27 @@ branding:
   icon: aperture
   color: green
 inputs:
+  #
+  # Required
+  #
   image:
     description: Image to analyze
     required: true
+  #
+  # PR comments
+  #
   always-comment:
     description: Post dive analysis results as PR comment regardless of whether
       any inefficiencies were found. By default, comments are only posted when
       issues are detected. Requires `github-token`
     required: false
     default: 'false'
-  config-file:
-    description: Path to dive config file
-    required: false
-    default: ${{ github.workspace }}/.dive.yaml
   github-token:
     description: GitHub token to post PR comment with dive analysis
     required: false
+  #
+  # Dive image
+  #
   dive-image-registry:
     description: Docker registry to pull the Dive image from
     required: false
@@ -31,6 +36,32 @@ inputs:
       using a specific version with SHA is recommended for security and reproducibility
     required: false
     default: 0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
+  #
+  # Dive configs
+  #
+  config-file:
+    description: >-
+      Path to the Dive configuration file.
+      If not provided, default Dive settings will be used.
+      Individual parameters `min-image-efficiency`, `max-wasted-ratio`, and
+      `max-wasted-bytes` can override settings specified in `config-file`.
+    required: false
+    default: ${{ github.workspace }}/.dive.yaml
+  highest-wasted-bytes:
+    description: >-
+      Threshold for the maximum allowed bytes wasted expressed in B, KB, MB and
+      GB
+    required: false
+  highest-user-wasted-ratio:
+    description: >-
+      Threshold for the maximum allowed ratio wasted bytes as a function of
+      total image size expressed as a ratio between 0-1.
+      Note: the base image layer is NOT included in the total image size.
+    required: false
+  lowest-efficiency-ratio:
+    description: >-
+      Threshold for the lowest allowed image efficiency ratio between 0-1
+    required: false
 
 runs:
   using: node20
