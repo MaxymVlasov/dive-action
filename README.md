@@ -1,9 +1,10 @@
 # dive action
 
 [![GitHub Marketplace][marketplace-badge]](https://github.com/marketplace/actions/dive-action-v2)
-[![Release][release-badge]](https://github.com/MaxymVlasov/dive-action/releases/latest)
+[![Release][release-badge]](https://github.com/MaxymVlasov/dive-action/releases/latest)  
 ![Maintenance status](https://img.shields.io/maintenance/yes/2025.svg)
 [![OpenSSF Scorecard Badge]](https://scorecard.dev/viewer/?uri=github.com/MaxymVlasov/dive-action)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10053/badge)](https://www.bestpractices.dev/projects/10053)  
 [![Stand With Ukraine]](https://stand-with-ukraine.pp.ua)
 [![Russian Warship Go Fuck Yourself]](https://stand-with-ukraine.pp.ua)
 
@@ -15,18 +16,11 @@
 [Stand With Ukraine]: https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg
 [Russian Warship Go Fuck Yourself]: https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/RussianWarship.svg
 
-dive action is an action that allows developers who develop Docker image to run
-[dive](https://github.com/joschi/dive) on GitHub Actions.
+Dive action is a GitHub Action that helps you optimize your container images. It runs an analysis on your Docker or OCI images to identify inefficiencies, such as unnecessary files or wasted space, and then provides clear feedback (for example, via pull request comments) so you can reduce the image size and boost performance.
 
-`dive` is a tool for
-exploring a docker image, layer contents, and discovering ways to shrink the
-size of your Docker/OCI image. Integrating dive into your CI will let you
-reduce your container image size as early as possible.
-
+Under the hood, the [dive](https://github.com/joschi/dive) tool inspects image layers to pinpoint areas for improvement. By integrating dive action into your CI pipeline, you can catch inefficiencies early and maintain lean, efficient container images.
 
 ![Example PR comment](docs/pr-comment.png)
-
-
 
 * [Usage](#usage)
   * [Workflow](#workflow)
@@ -40,6 +34,9 @@ reduce your container image size as early as possible.
 * [Authors](#authors)
 * [License](#license)
   * [Additional information for users from Russia and Belarus](#additional-information-for-users-from-russia-and-belarus)
+
+Want to contribute?
+Check [open issues](https://github.com/antonbabenko/pre-commit-terraform/issues) and [contributing notes](.github/CONTRIBUTING.md).
 
 ## Usage
 
