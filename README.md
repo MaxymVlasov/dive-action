@@ -36,7 +36,7 @@ Under the hood, the [dive](https://github.com/joschi/dive) tool inspects image l
   * [Additional information for users from Russia and Belarus](#additional-information-for-users-from-russia-and-belarus)
 
 Want to contribute?
-Check [open issues](https://github.com/antonbabenko/pre-commit-terraform/issues) and [contributing notes](.github/CONTRIBUTING.md).
+Check [open issues](https://github.com/MaxymVlasov/dive-action/issues) and [contributing notes](.github/CONTRIBUTING.md).
 
 ## Usage
 
