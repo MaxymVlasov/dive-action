@@ -1,12 +1,19 @@
 # dive action
 
-[![Release][release-badge]](https://github.com/maxymvlasov/dive-action/releases/latest)
 [![GitHub Marketplace][marketplace-badge]](https://github.com/marketplace/actions/dive-action-v2)
-[![License][license-badge]](https://github.com/maxymvlasov/dive-action/blob/master/LICENSE)
+[![Release][release-badge]](https://github.com/MaxymVlasov/dive-action/releases/latest)
+![Maintenance status](https://img.shields.io/maintenance/yes/2025.svg)
+[![OpenSSF Scorecard Badge]](https://scorecard.dev/viewer/?uri=github.com/MaxymVlasov/dive-action)
+[![Stand With Ukraine]](https://stand-with-ukraine.pp.ua)
+[![Russian Warship Go Fuck Yourself]](https://stand-with-ukraine.pp.ua)
 
-[release-badge]: https://img.shields.io/github/release/maxymvlasov/dive-action.svg?logo=github&color=green
+
+[release-badge]: https://img.shields.io/github/release/MaxymVlasov/dive-action.svg?logo=github&color=green
 [marketplace-badge]: https://img.shields.io/badge/marketplace-dive--action--v2-green?logo=github
-[license-badge]: https://img.shields.io/github/license/maxymvlasov/dive-action.svg
+[license-badge]: https://img.shields.io/github/license/MaxymVlasov/dive-action.svg
+[OpenSSF Scorecard Badge]: https://api.scorecard.dev/projects/github.com/MaxymVlasov/dive-action/badge
+[Stand With Ukraine]: https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg
+[Russian Warship Go Fuck Yourself]: https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/RussianWarship.svg
 
 dive action is an action that allows developers who develop Docker image to run
 [dive](https://github.com/joschi/dive) on GitHub Actions.
@@ -31,6 +38,8 @@ reduce your container image size as early as possible.
   * [Config file](#config-file)
   * [Output](#output)
 * [Authors](#authors)
+* [License](#license)
+  * [Additional information for users from Russia and Belarus](#additional-information-for-users-from-russia-and-belarus)
 
 ## Usage
 
@@ -115,7 +124,7 @@ created.
 | highest-user-wasted-ratio | Float  | false    |                                      | Threshold for the maximum allowed ratio wasted bytes as a function of total image size expressed as a ratio between 0-1. Note: the base image layer is NOT included in the total image size.                                                                                  |
 | lowest-efficiency-ratio   | Float  | false    |                                      | Threshold for the lowest allowed image efficiency ratio between 0-1                                                                                                                                                                                                           |
 
-Dive settings priority:
+Dive configs priority:
 
 1. `highest-wasted-bytes`, `highest-user-wasted-ratio`, `lowest-efficiency-ratio`
 2. `config-file`
@@ -202,8 +211,18 @@ Result:FAIL [Total:3] [Passed:2] [Failed:1] [Warn:0] [Skipped:0]
 
 This action was originally created by [Yuichi Tanaka](https://github.com/yuichielectric), but [upstream](https://github.com/yuichielectric/dive-action/) not maintained since 2020.
 
-Now it supported by [Maksym Vlasov](https://github.com/maxymvlasov) with help from these awesome contributors:
+Now it supported by [Maksym Vlasov](https://github.com/MaxymVlasov) with help from these awesome contributors:
 
 <a href="https://github.com/MaxymVlasov/dive-action/graphs/contributors">
   <img alt="Contributors" src="https://contrib.rocks/image?repo=MaxymVlasov/dive-action" />
 </a>
+
+## License
+
+MIT licensed. See [LICENSE](LICENSE) for full details.
+
+### Additional information for users from Russia and Belarus
+
+* Russia has [illegally annexed Crimea in 2014](https://en.wikipedia.org/wiki/Annexation_of_Crimea_by_the_Russian_Federation) and [brought the war in Donbas](https://en.wikipedia.org/wiki/War_in_Donbas) followed by [full-scale invasion of Ukraine in 2022](https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine).
+* Russia has brought sorrow and devastations to millions of Ukrainians, killed hundreds of innocent people, damaged thousands of buildings, and forced several million people to flee.
+* [Putin khuylo!](https://en.wikipedia.org/wiki/Putin_khuylo!)
