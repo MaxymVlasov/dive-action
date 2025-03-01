@@ -113,9 +113,14 @@ async function run(): Promise<void> {
     const lowestEfficiencyRatio = core.getInput('lowest-efficiency-ratio')
 
     const alwaysCommentInput = core.getInput('always-comment')
-    if (alwaysCommentInput.toLowerCase() !== 'true' || alwaysCommentInput.toLowerCase() !== 'false') {
-      error(`"always-comment" can contain "true" or "false", given "${alwaysCommentInput}"`)
-     }
+    if (
+      alwaysCommentInput.toLowerCase() !== 'true' ||
+      alwaysCommentInput.toLowerCase() !== 'false'
+    ) {
+      error(
+        `"always-comment" can contain "true" or "false", given "${alwaysCommentInput}"`
+      )
+    }
     // Convert always-comment input to boolean value.
     const alwaysComment = alwaysCommentInput.toLowerCase() === 'true'
     const ghToken = core.getInput('github-token')

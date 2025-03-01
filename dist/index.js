@@ -138,9 +138,12 @@ async function run() {
         const highestWastedBytes = core.getInput('highest-wasted-bytes');
         const highestUserWastedRatio = core.getInput('highest-user-wasted-ratio');
         const lowestEfficiencyRatio = core.getInput('lowest-efficiency-ratio');
+        const alwaysCommentInput = core.getInput('always-comment');
+        if (alwaysCommentInput.toLowerCase() !== 'true' || alwaysCommentInput.toLowerCase() !== 'false') {
+            error(`"always-comment" can contain "true" or "false", given "${alwaysCommentInput}"`);
+        }
         // Convert always-comment input to boolean value.
-        // All values other than 'true' are considered false.
-        const alwaysComment = core.getInput('always-comment').toLowerCase() === 'true';
+        const alwaysComment = alwaysCommentInput.toLowerCase() === 'true';
         const ghToken = core.getInput('github-token');
         if (alwaysComment && !ghToken) {
             error('"always-comment" parameter requires "github-token" to be set.');
