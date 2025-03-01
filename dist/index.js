@@ -139,7 +139,8 @@ async function run() {
         const highestUserWastedRatio = core.getInput('highest-user-wasted-ratio');
         const lowestEfficiencyRatio = core.getInput('lowest-efficiency-ratio');
         const alwaysCommentInput = core.getInput('always-comment');
-        if (alwaysCommentInput.toLowerCase() !== 'true' || alwaysCommentInput.toLowerCase() !== 'false') {
+        if (alwaysCommentInput.toLowerCase() !== 'true' ||
+            alwaysCommentInput.toLowerCase() !== 'false') {
             error(`"always-comment" can contain "true" or "false", given "${alwaysCommentInput}"`);
         }
         // Convert always-comment input to boolean value.
