@@ -114,7 +114,7 @@ async function run(): Promise<void> {
 
     const alwaysCommentInput = core.getInput('always-comment')
     if (
-      alwaysCommentInput.toLowerCase() !== 'true' ||
+      alwaysCommentInput.toLowerCase() !== 'true' &&
       alwaysCommentInput.toLowerCase() !== 'false'
     ) {
       error(
