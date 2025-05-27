@@ -18,7 +18,7 @@
 
 Dive action is a GitHub Action that helps you optimize your container images. It runs an analysis on your Docker or OCI images to identify inefficiencies, such as unnecessary files or wasted space, and then provides clear feedback (for example, via pull request comments) so you can reduce the image size and boost performance.
 
-Under the hood, the [dive](https://github.com/joschi/dive) tool inspects image layers to pinpoint areas for improvement. By integrating dive action into your CI pipeline, you can catch inefficiencies early and maintain lean, efficient container images.
+Under the hood, the [dive](https://github.com/wagoodman/dive) tool inspects image layers to pinpoint areas for improvement. By integrating dive action into your CI pipeline, you can catch inefficiencies early and maintain lean, efficient container images.
 
 ![Example PR comment](docs/pr-comment.png)
 
@@ -81,10 +81,10 @@ created.
 | ---------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | image                     | String  | true     |                                                                                        | Image to analyze                                                                                                                                                                                                                                                           |
 | always-comment            | Boolean | false    | `false`                                                                                | Post dive analysis results as PR comment regardless of whether any inefficiencies were found. By default, comments are only posted when issues are detected. Requires `github-token`                                                                                       |
-| config-file               | String  | false    | `${{ github.workspace }}/.dive.yaml`                                                   | Path to [dive config file](https://github.com/joschi/dive#ci-integration).  If not provided, default Dive settings will be used. Individual parameters `min-image-efficiency`, `max-wasted-ratio`, and `max-wasted-bytes` can override settings specified in `config-file` |
+| config-file               | String  | false    | `${{ github.workspace }}/.dive.yaml`                                                   | Path to [dive config file](https://github.com/wagoodman/dive#ci-integration).  If not provided, default Dive settings will be used. Individual parameters `min-image-efficiency`, `max-wasted-ratio`, and `max-wasted-bytes` can override settings specified in `config-file` |
 | github-token              | String  | false    |                                                                                        | GitHub token to post PR comment with dive analysis                                                                                                                                                                                                                         |
-| dive-image-registry       | String  | false    | `ghcr.io/joschi/dive`                                                                  | Docker registry to pull the Dive image from                                                                                                                                                                                                                                |
-| dive-image-version        | String  | false    | `0.13.1@sha256:f016a4bd2837` `130545e391acee7876aa5f7258` `ccdb12640ab4afaffa1c597d17` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility                                                                                                               |
+| dive-image-registry       | String  | false    | `ghcr.io/wagoodman/dive`                                                                  | Docker registry to pull the Dive image from                                                                                                                                                                                                                                |
+| dive-image-version        | String  | false    | `v0.13.1@sha256:f1886e6c32c0` `94fc41a623c1989f5cb3e48aa7` `66da5f0be233f911fc1d85ce10` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility                                                                                                               |
 | highest-wasted-bytes      | String  | false    |                                                                                        | Threshold for the maximum allowed bytes wasted expressed in B, KB, MB and GB                                                                                                                                                                                               |
 | highest-user-wasted-ratio | Float   | false    |                                                                                        | Threshold for the maximum allowed ratio wasted bytes as a function of total image size expressed as a ratio between 0-1. Note: the base image layer is NOT included in the total image size                                                                                |
 | lowest-efficiency-ratio   | Float   | false    |                                                                                        | Threshold for the lowest allowed image efficiency ratio between 0-1                                                                                                                                                                                                        |
@@ -109,14 +109,14 @@ created.
 
 | Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type   | Required | Default | Description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| dive-image-registry | String | false    | `ghcr.io/joschi/dive`                                                                  | Docker registry to pull the Dive image from                                                                                                                  |
-| dive-image-version  | String | false    | `0.13.1@sha256:f016a4bd2837` `130545e391acee7876aa5f7258` `ccdb12640ab4afaffa1c597d17` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility |
+| dive-image-registry | String | false    | `ghcr.io/wagoodman/dive`                                                                  | Docker registry to pull the Dive image from                                                                                                                  |
+| dive-image-version  | String | false    | `v0.13.1@sha256:f1886e6c32c0` `94fc41a623c1989f5cb3e48aa7` `66da5f0be233f911fc1d85ce10` | Version of the Dive docker image to use. <br> While `latest` is supported, using a specific version with SHA is recommended for security and reproducibility |
 
 #### Dive configs
 
 | Name                      | Type   | Required | Default                              | Description                                                                                                                                                                                                                                                                  |
 | ------------------------- | ------ | -------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| config-file               | String | false    | `${{ github.workspace }}/.dive.yaml` | Path to [dive config file](https://github.com/joschi/dive#ci-integration). If not provided, default Dive settings will be used.<br>Individual parameters `min-image-efficiency`, `max-wasted-ratio`, and `max-wasted-bytes` can override settings specified in `config-file` |
+| config-file               | String | false    | `${{ github.workspace }}/.dive.yaml` | Path to [dive config file](https://github.com/wagoodman/dive#ci-integration). If not provided, default Dive settings will be used.<br>Individual parameters `min-image-efficiency`, `max-wasted-ratio`, and `max-wasted-bytes` can override settings specified in `config-file` |
 | highest-wasted-bytes      | String | false    |                                      | Threshold for the maximum allowed bytes wasted expressed in B, KB, MB and GB                                                                                                                                                                                                 |
 | highest-user-wasted-ratio | Float  | false    |                                      | Threshold for the maximum allowed ratio wasted bytes as a function of total image size expressed as a ratio between 0-1. Note: the base image layer is NOT included in the total image size                                                                                  |
 | lowest-efficiency-ratio   | Float  | false    |                                      | Threshold for the lowest allowed image efficiency ratio between 0-1                                                                                                                                                                                                          |
@@ -132,7 +132,7 @@ Dive configs priority:
 
 ### Config file
 
-There are three metrics supported by the dive config file. See [here](https://github.com/joschi/dive#ci-integration) for details.
+There are three metrics supported by the dive config file. See [here](https://github.com/wagoodman/dive#ci-integration) for details.
 
 ```yaml
 rules:
@@ -153,14 +153,14 @@ rules:
 ### Output
 
 ```txt
-ghcr.io/joschi/dive@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17: Pulling from joschi/dive
+ghcr.io/wagoodman/dive@sha256:f1886e6c32c094fc41a623c1989f5cb3e48aa766da5f0be233f911fc1d85ce10: Pulling from wagoodman/dive
 54c3c928c034: Pulling fs layer
 54c3c928c034: Verifying Checksum
 54c3c928c034: Download complete
 54c3c928c034: Pull complete
-Digest: sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
-Status: Downloaded newer image for ghcr.io/joschi/dive@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
-ghcr.io/joschi/dive:0.13.1@sha256:f016a4bd2837130545e391acee7876aa5f7258ccdb12640ab4afaffa1c597d17
+Digest: sha256:f1886e6c32c094fc41a623c1989f5cb3e48aa766da5f0be233f911fc1d85ce10
+Status: Downloaded newer image for ghcr.io/wagoodman/dive@sha256:f1886e6c32c094fc41a623c1989f5cb3e48aa766da5f0be233f911fc1d85ce10
+ghcr.io/wagoodman/dive:v0.13.1@sha256:f1886e6c32c094fc41a623c1989f5cb3e48aa766da5f0be233f911fc1d85ce10
   Using CI config: /.dive-ci
 Image Source: docker://sample:latest
 Fetching image... (this can take a while for large images)

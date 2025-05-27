@@ -19,7 +19,7 @@ jobs:
   test:  # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     env:
-      TEST_IMAGE: ghcr.io/joschi/dive:latest
+      TEST_IMAGE: ghcr.io/wagoodman/dive:latest
       WASTED_IMAGE: python:3.13-slim-bookworm
 
     permissions:
@@ -63,9 +63,9 @@ jobs:
         uses: ./
         with:
           image: ${{ env.TEST_IMAGE }}
-          dive-image-registry: ghcr.io/joschi/dive
+          dive-image-registry: ghcr.io/wagoodman/dive
           dive-image-version: >-
-            0.14.0
+            v0.13.0
 
       - name: 'Params: highest-wasted-bytes, highest-user-wasted-ratio, lowest-efficiency-ratio'
         if: always() && steps.pre-setup.outcome == 'success'
