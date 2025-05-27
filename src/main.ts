@@ -6,7 +6,7 @@ import stripAnsi from 'strip-ansi'
 import fs from 'fs'
 
 function formatTableRow(line: string): string {
-  // https://github.com/joschi/dive/blob/v0.12.0/runtime/ci/evaluator.go#L138
+  // https://github.com/wagoodman/dive/blob/v0.13.1/runtime/ci/evaluator.go#L138
   const count = line.slice(0, 5)
   const wastedSpace = line.slice(7, 19)
   const filePath = line.slice(21)
