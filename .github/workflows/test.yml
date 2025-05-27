@@ -65,7 +65,7 @@ jobs:
           image: ${{ env.TEST_IMAGE }}
           dive-image-registry: ghcr.io/wagoodman/dive
           dive-image-version: >-
-            v0.13.0
+            0.13.0
 
       - name: 'Params: highest-wasted-bytes, highest-user-wasted-ratio, lowest-efficiency-ratio'
         if: always() && steps.pre-setup.outcome == 'success'
