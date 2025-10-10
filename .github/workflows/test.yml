@@ -390,6 +390,33 @@ jobs:
             exit 1
           fi
 
+      # Test for invalid collapse-inefficient-files-details value
+      - name: '[Run] Negative test: Invalid collapse-inefficient-files-details value'
+        id: invalid-collapse-inefficient
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          collapse-inefficient-files-details: maybe
+
+      - name: '[Verification] Negative test: Invalid collapse-inefficient-files-details value'
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-collapse-inefficient.outputs.error }}"
+          expected_message="collapse-inefficient-files-details must be true or false, given maybe"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-collapse-inefficient.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
       # Verifies that the action properly handles missing GitHub token when
       # always-comment is true. Expected to fail as posting comments requires
       # GitHub token authentication
@@ -455,5 +482,94 @@ jobs:
           fi
 
           # Delete the comment after verification
+          gh api -X DELETE "repos/${{ github.repository }}/issues/comments/${comment_id}"
+          echo "Comment deleted"
+
+      # Test collapse-inefficient-files-details feature enabled
+      - name: 'Params: collapse-inefficient-files-details with github-token'
+        if: github.ref != 'refs/heads/main'
+        uses: ./
+        with:
+          image: ${{ env.WASTED_IMAGE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          collapse-inefficient-files-details: true
+
+      - name: '[Verification] Params: collapse-inefficient-files-details enabled'
+        if: github.ref != 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the PR number
+          pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR number: $pr_number"
+
+          # Check if the comment exists and contains the details tag
+          comment_body=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
+          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Inefficient Files")) | .body')
+
+          if [ -z "$comment_body" ]; then
+            echo "Expected comment not found in PR"
+            exit 1
+          fi
+
+          # Verify the comment contains details/summary tags
+          if ! echo "$comment_body" | grep -q "<details>"; then
+            echo "Expected <details> tag not found in comment"
+            exit 1
+          fi
+
+          if ! echo "$comment_body" | grep -q "<summary>"; then
+            echo "Expected <summary> tag not found in comment"
+            exit 1
+          fi
+
+          if ! echo "$comment_body" | grep -q "</details>"; then
+            echo "Expected </details> tag not found in comment"
+            exit 1
+          fi
+
+          # Get the comment ID and delete it
+          comment_id=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
+          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Inefficient Files")) | .id')
+          gh api -X DELETE "repos/${{ github.repository }}/issues/comments/${comment_id}"
+          echo "Comment deleted"
+
+      # Test collapse-inefficient-files-details feature disabled (default)
+      - name: 'Params: collapse-inefficient-files-details disabled (default)'
+        if: github.ref != 'refs/heads/main'
+        uses: ./
+        with:
+          image: ${{ env.WASTED_IMAGE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: '[Verification] Params: collapse-inefficient-files-details disabled'
+        if: github.ref != 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the PR number
+          pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR number: $pr_number"
+
+          # Check if the comment exists
+          comment_body=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
+          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Inefficient Files")) | .body')
+
+          if [ -z "$comment_body" ]; then
+            echo "Expected comment not found in PR"
+            exit 1
+          fi
+
+          # Verify the comment does NOT contain details/summary tags
+          if echo "$comment_body" | grep -q "<details>"; then
+            echo "Unexpected <details> tag found in comment (should not be collapsed by default)"
+            exit 1
+          fi
+
+          # Get the comment ID and delete it
+          comment_id=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
+          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Inefficient Files")) | .id')
           gh api -X DELETE "repos/${{ github.repository }}/issues/comments/${comment_id}"
           echo "Comment deleted"
