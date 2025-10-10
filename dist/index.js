@@ -131,7 +131,7 @@ function validateInputs(alwaysCommentInput, highestUserWastedRatio, lowestEffici
     }
     // Validate Docker image name format
     if (!/^[\w.\-_/]+$/.test(diveRepo)) {
-        error('Invalid dive-image-registry format');
+        error('Invalid dive-image-registry format. Expected format: "[repository/]<image>[:tag]", e.g., "myrepo/myimage:latest". Allowed characters: alphanumeric, ".", "-", "_", "/".');
     }
 }
 /**
