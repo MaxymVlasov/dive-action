@@ -15,12 +15,14 @@ function formatTableRow(line: string): string {
 
 function composeComment(
   diveOutput: string,
-  customLeadingComment: string[]
+  customLeadingComment: string[],
+  collapseInefficient = false
 ): string {
   const ret = customLeadingComment
   let summarySection = false
   let inefficientFilesSection = false
   let resultSection = false
+  const inefficientFilesContent: string[] = []
 
   for (const line of diveOutput.split('\n')) {
     switch (true) {
@@ -35,10 +37,23 @@ function composeComment(
         summarySection = false
         inefficientFilesSection = true
         resultSection = false
-        ret.push('### Inefficient Files')
+        if (collapseInefficient) {
+          ret.push('### Inefficient Files')
+          ret.push('<details><summary>Click to expand</summary>')
+          ret.push('')
+        } else {
+          ret.push('### Inefficient Files')
+        }
         break
 
       case line.includes('Results:'):
+        if (inefficientFilesSection && collapseInefficient) {
+          ret.push(...inefficientFilesContent)
+          ret.push('')
+          ret.push('</details>')
+        } else if (inefficientFilesSection) {
+          ret.push(...inefficientFilesContent)
+        }
         summarySection = false
         inefficientFilesSection = false
         resultSection = true
@@ -51,10 +66,10 @@ function composeComment(
 
       case inefficientFilesSection:
         if (line.startsWith('Count')) {
-          ret.push('| Count | Wasted Space | File Path |')
-          ret.push('|---|---|---|')
+          inefficientFilesContent.push('| Count | Wasted Space | File Path |')
+          inefficientFilesContent.push('|---|---|---|')
         } else {
-          ret.push(formatTableRow(line))
+          inefficientFilesContent.push(formatTableRow(line))
         }
         break
 
@@ -69,13 +84,14 @@ function composeComment(
 async function postComment(
   ghToken: string,
   diveOutput: string,
-  customLeadingComment: string[] = []
+  customLeadingComment: string[] = [],
+  collapseInefficient = false
 ): Promise<void> {
   const octokit = github.getOctokit(ghToken)
   const comment = {
     ...github.context.issue,
     issue_number: github.context.issue.number,
-    body: composeComment(diveOutput, customLeadingComment)
+    body: composeComment(diveOutput, customLeadingComment, collapseInefficient)
   }
   await octokit.rest.issues.createComment(comment)
 }
@@ -90,11 +106,21 @@ function validateInputs(
   alwaysCommentInput: string,
   highestUserWastedRatio: string,
   lowestEfficiencyRatio: string,
-  diveRepo: string
+  diveRepo: string,
+  collapseInefficientInput: string
 ): void {
   if (alwaysCommentInput !== 'true' && alwaysCommentInput !== 'false') {
     error(
       `"always-comment" must be "true" or "false", given "${alwaysCommentInput}"`
+    )
+  }
+
+  if (
+    collapseInefficientInput !== 'true' &&
+    collapseInefficientInput !== 'false'
+  ) {
+    error(
+      `"collapse-inefficient-files-details" must be "true" or "false", given "${collapseInefficientInput}"`
     )
   }
 
@@ -157,16 +183,21 @@ async function run(): Promise<void> {
     const diveImage = `${diveRepo}:${diveVersion}`
 
     const alwaysCommentInput = core.getInput('always-comment').toLowerCase()
+    const collapseInefficientInput = core
+      .getInput('collapse-inefficient-files-details')
+      .toLowerCase()
     const ghToken = core.getInput('github-token')
 
     validateInputs(
       alwaysCommentInput,
       highestUserWastedRatio,
       lowestEfficiencyRatio,
-      diveRepo
+      diveRepo,
+      collapseInefficientInput
     )
     // Convert always-comment input to boolean value.
     const alwaysComment = alwaysCommentInput === 'true'
+    const collapseInefficient = collapseInefficientInput === 'true'
     if (alwaysComment && !ghToken) {
       error('"always-comment" parameter requires "github-token" to be set.')
     }
@@ -231,7 +262,7 @@ async function run(): Promise<void> {
     const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`
 
     if (alwaysComment) {
-      await postComment(ghToken, diveOutput)
+      await postComment(ghToken, diveOutput, [], collapseInefficient)
 
       if (exitCode === 0) return
 
@@ -246,10 +277,12 @@ async function run(): Promise<void> {
           'a PR comment, please provide the github-token in the action inputs.'
       )
     }
-    await postComment(ghToken, diveOutput, [
-      '> [!WARNING]',
-      '> The container image has inefficient files.'
-    ])
+    await postComment(
+      ghToken,
+      diveOutput,
+      ['> [!WARNING]', '> The container image has inefficient files.'],
+      collapseInefficient
+    )
 
     error(scanFailedErrorMsg)
   } catch (e) {
