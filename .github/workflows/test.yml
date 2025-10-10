@@ -142,6 +142,168 @@ jobs:
             exit 1
           fi
 
+      - name: '[Run] Negative test: Invalid highest-user-wasted-ratio (> 1)'
+        id: invalid-wasted-ratio-high
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          highest-user-wasted-ratio: 1.5
+
+      - name: >
+          [Verification] Negative test: Invalid highest-user-wasted-ratio (>1)
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-wasted-ratio-high.outputs.error }}"
+          expected_message="highest-user-wasted-ratio must be a number between 0 and 1, given 1.5"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-wasted-ratio-high.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
+      - name: '[Run] Negative test: Invalid highest-user-wasted-ratio (negative)'
+        id: invalid-wasted-ratio-negative
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          highest-user-wasted-ratio: -0.1
+
+      - name: >
+          [Verification] Negative test: Invalid highest-user-wasted-ratio (negative)
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-wasted-ratio-negative.outputs.error }}"
+          expected_message="highest-user-wasted-ratio must be a number between 0 and 1, given -0.1"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-wasted-ratio-negative.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
+      - name: '[Run] Negative test: Invalid lowest-efficiency-ratio (> 1)'
+        id: invalid-efficiency-ratio-high
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          lowest-efficiency-ratio: 1.5
+
+      - name: >
+          [Verification] Negative test: Invalid lowest-efficiency-ratio (> 1)
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-efficiency-ratio-high.outputs.error }}"
+          expected_message="lowest-efficiency-ratio must be a number between 0 and 1, given 1.5"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-efficiency-ratio-high.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
+      - name: '[Run] Negative test: Invalid lowest-efficiency-ratio (negative)'
+        id: invalid-efficiency-ratio-negative
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          lowest-efficiency-ratio: -0.1
+
+      - name: >
+          [Verification] Negative test: Invalid lowest-efficiency-ratio (negative)
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-efficiency-ratio-negative.outputs.error }}"
+          expected_message="lowest-efficiency-ratio must be a number between 0 and 1, given -0.1"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-efficiency-ratio-negative.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
+      - name: '[Run] Negative test: Invalid highest-user-wasted-ratio (NaN)'
+        id: invalid-wasted-ratio-nan
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          highest-user-wasted-ratio: abc
+
+      - name: >
+          [Verification] Negative test: Invalid highest-user-wasted-ratio (NaN)
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-wasted-ratio-nan.outputs.error }}"
+          expected_message="highest-user-wasted-ratio must be a number between 0 and 1, given abc"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-wasted-ratio-nan.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
+      - name: '[Run] Negative test: Invalid lowest-efficiency-ratio (NaN)'
+        id: invalid-efficiency-ratio-nan
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          lowest-efficiency-ratio: abc
+
+      - name: >
+          [Verification] Negative test: Invalid lowest-efficiency-ratio (NaN)
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-efficiency-ratio-nan.outputs.error }}"
+          expected_message="lowest-efficiency-ratio must be a number between 0 and 1, given abc"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-efficiency-ratio-nan.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
       # Validates that the action correctly enforces the required image
       # input parameter. Note, that it has no access to post a comment
       - name: '[Run] Negative test: Missing required image parameter'
@@ -172,6 +334,62 @@ jobs:
             exit 1
           fi
 
+      - name: '[Run] Negative test: Invalid dive-image-registry format'
+        id: invalid-dive-registry
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          dive-image-registry: invalid@registry:format
+
+      - name: '[Verification] Negative test: Invalid dive-image-registry format'
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-dive-registry.outputs.error }}"
+          expected_message='Invalid dive-image-registry format. Expected format: '
+          expected_message+='[registry]/repository/image, e.g., ghcr.io/myrepo/myimage. '
+          expected_message+='Allowed characters: alphanumeric, ., -, _, /.'
+
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-dive-registry.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
+      # Test for invalid always-comment value (not true or false)
+      - name: '[Run] Negative test: Invalid always-comment value'
+        id: invalid-always-comment
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          always-comment: maybe
+
+      - name: '[Verification] Negative test: Invalid always-comment value'
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-always-comment.outputs.error }}"
+          expected_message="always-comment must be true or false, given maybe"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-always-comment.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
       # Verifies that the action properly handles missing GitHub token when
       # always-comment is true. Expected to fail as posting comments requires
       # GitHub token authentication
@@ -192,7 +410,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.always-comment-missing-github-token.outputs.error }}"
-          expected_message='always-comment parameter requires github-token to be set.'
+          expected_message="always-comment parameter requires github-token to be set."
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
