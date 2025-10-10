@@ -334,7 +334,6 @@ jobs:
             exit 1
           fi
 
-      # Test for invalid dive-image-registry format
       - name: '[Run] Negative test: Invalid dive-image-registry format'
         id: invalid-dive-registry
         if: always() && steps.pre-setup.outcome == 'success'
@@ -349,9 +348,9 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.invalid-dive-registry.outputs.error }}"
-          expected_message="Invalid dive-image-registry format. Expected format: "
-          expected_message+="[repository/]<image>[:tag], e.g., myrepo/myimage:v1.0.0. "
-          expected_message+="Allowed characters: alphanumeric, ., -, _, /."
+          expected_message='Invalid dive-image-registry format. Expected format: '
+          expected_message+='[repository/]<image>[:tag], e.g., myrepo/myimage:v1.0.0. '
+          expected_message+='Allowed characters: alphanumeric, ., -, _, /.'
 
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
