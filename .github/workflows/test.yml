@@ -334,6 +334,36 @@ jobs:
             exit 1
           fi
 
+      # Test for invalid dive-image-registry format
+      - name: '[Run] Negative test: Invalid dive-image-registry format'
+        id: invalid-dive-registry
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          dive-image-registry: invalid@registry:format
+
+      - name: '[Verification] Negative test: Invalid dive-image-registry format'
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-dive-registry.outputs.error }}"
+          expected_message="Invalid dive-image-registry format. Expected format: "
+          expected_message+="[repository/]<image>[:tag], e.g., myrepo/myimage:v1.0.0. "
+          expected_message+="Allowed characters: alphanumeric, ., -, _, /."
+
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-dive-registry.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
       # Test for invalid always-comment value (not true or false)
       - name: '[Run] Negative test: Invalid always-comment value'
         id: invalid-always-comment
