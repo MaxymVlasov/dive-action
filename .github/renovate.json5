@@ -1,4 +1,7 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: ['local>SpotOnInc/renovate-config']
+  extends: ['local>SpotOnInc/renovate-config'],
+  'pre-commit': {
+    enabled: false // Use pre-commit.ci freeze instead
+  }
 }
