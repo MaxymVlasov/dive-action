@@ -11,7 +11,7 @@ exclude: |
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       # Git style
       - id: check-added-large-files
@@ -99,7 +99,7 @@ repos:
           - --strict
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.33.2
+    rev: 0.34.0
     hooks:
       - id: check-jsonschema
         name: Validate Coderabbit AI settings
