@@ -115,7 +115,7 @@ function error(message) {
 }
 function validateInputs(alwaysCommentInput, highestUserWastedRatio, lowestEfficiencyRatio, diveRepo) {
     if (alwaysCommentInput !== 'true' && alwaysCommentInput !== 'false') {
-        error(`"always-comment" can contain "true" or "false", given "${alwaysCommentInput}"`);
+        error(`"always-comment" must be "true" or "false", given "${alwaysCommentInput}"`);
     }
     if (highestUserWastedRatio) {
         const ratio = Number(highestUserWastedRatio);

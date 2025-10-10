@@ -211,7 +211,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.invalid-efficiency-ratio-high.outputs.error }}"
-          expected_message="lowest-efficiency-ratio must be a number between 0 and 1, given \"1.5\""
+          expected_message="lowest-efficiency-ratio must be a number between 0 and 1, given 1.5"
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
@@ -330,6 +330,33 @@ jobs:
             exit 1
           fi
           if [[ "${{ steps.missing-required.outcome }}" != "failure" ]]; then
+            echo "Expected step to fail"
+            exit 1
+          fi
+
+      # Test for invalid always-comment value (not true or false)
+      - name: '[Run] Negative test: Invalid always-comment value'
+        id: invalid-always-comment
+        if: always() && steps.pre-setup.outcome == 'success'
+        continue-on-error: true
+        uses: ./
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          always-comment: maybe
+
+      - name: '[Verification] Negative test: Invalid always-comment value'
+        if: always() && steps.pre-setup.outcome == 'success'
+        shell: bash
+        run: |
+          error_message="${{ steps.invalid-always-comment.outputs.error }}"
+          expected_message="always-comment must be true or false, given maybe"
+
+          if [[ ! "$error_message" =~ "$expected_message" ]]; then
+            echo "Expected error message to contain: $expected_message"
+            echo "Got: $error_message"
+            exit 1
+          fi
+          if [[ "${{ steps.invalid-always-comment.outcome }}" != "failure" ]]; then
             echo "Expected step to fail"
             exit 1
           fi

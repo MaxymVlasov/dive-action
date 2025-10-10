@@ -94,7 +94,7 @@ function validateInputs(
 ): void {
   if (alwaysCommentInput !== 'true' && alwaysCommentInput !== 'false') {
     error(
-      `"always-comment" can contain "true" or "false", given "${alwaysCommentInput}"`
+      `"always-comment" must be "true" or "false", given "${alwaysCommentInput}"`
     )
   }
 
