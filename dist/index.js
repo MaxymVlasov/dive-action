@@ -113,6 +113,27 @@ function error(message) {
     core.setFailed(message);
     process.exit(1);
 }
+function validateInputs(alwaysCommentInput, highestUserWastedRatio, lowestEfficiencyRatio, diveRepo) {
+    if (alwaysCommentInput !== 'true' && alwaysCommentInput !== 'false') {
+        error(`"always-comment" can contain "true" or "false", given "${alwaysCommentInput}"`);
+    }
+    if (highestUserWastedRatio) {
+        const ratio = Number(highestUserWastedRatio);
+        if (isNaN(ratio) || ratio < 0 || ratio > 1) {
+            error(`"highest-user-wasted-ratio" must be a number between 0 and 1, given "${highestUserWastedRatio}"`);
+        }
+    }
+    if (lowestEfficiencyRatio) {
+        const ratio = Number(lowestEfficiencyRatio);
+        if (isNaN(ratio) || ratio < 0 || ratio > 1) {
+            error(`"lowest-efficiency-ratio" must be a number between 0 and 1, given "${lowestEfficiencyRatio}"`);
+        }
+    }
+    // Validate Docker image name format
+    if (!/^[\w.\-_/]+$/.test(diveRepo)) {
+        error('Invalid dive-image-registry format');
+    }
+}
 /**
  * Executes a Docker image analysis using the dive tool and handles the results.
  *
@@ -138,23 +159,17 @@ async function run() {
         const highestWastedBytes = core.getInput('highest-wasted-bytes');
         const highestUserWastedRatio = core.getInput('highest-user-wasted-ratio');
         const lowestEfficiencyRatio = core.getInput('lowest-efficiency-ratio');
+        const diveRepo = core.getInput('dive-image-registry');
+        const diveVersion = core.getInput('dive-image-version');
+        const diveImage = `${diveRepo}:${diveVersion}`;
         const alwaysCommentInput = core.getInput('always-comment').toLowerCase();
-        if (alwaysCommentInput !== 'true' && alwaysCommentInput !== 'false') {
-            error(`"always-comment" can contain "true" or "false", given "${alwaysCommentInput}"`);
-        }
+        const ghToken = core.getInput('github-token');
+        validateInputs(alwaysCommentInput, highestUserWastedRatio, lowestEfficiencyRatio, diveRepo);
         // Convert always-comment input to boolean value.
         const alwaysComment = alwaysCommentInput === 'true';
-        const ghToken = core.getInput('github-token');
         if (alwaysComment && !ghToken) {
             error('"always-comment" parameter requires "github-token" to be set.');
         }
-        const diveRepo = core.getInput('dive-image-registry');
-        // Validate Docker image name format
-        if (!/^[\w.\-_/]+$/.test(diveRepo)) {
-            error('Invalid dive-image-registry format');
-        }
-        const diveVersion = core.getInput('dive-image-version');
-        const diveImage = `${diveRepo}:${diveVersion}`;
         await exec.exec('docker', ['pull', diveImage]);
         const commandOptions = [
             '-e',
