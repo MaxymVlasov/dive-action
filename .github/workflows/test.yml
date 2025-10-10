@@ -157,7 +157,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.invalid-wasted-ratio-high.outputs.error }}"
-          expected_message='highest-user-wasted-ratio must be a number between 0 and 1, given "1.5"'
+          expected_message="highest-user-wasted-ratio must be a number between 0 and 1, given 1.5"
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
@@ -184,8 +184,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.invalid-wasted-ratio-negative.outputs.error }}"
-          expected_message='highest-user-wasted-ratio must be a number between 0 and 1, '
-          expected_message+='given "-0.1"'
+          expected_message="highest-user-wasted-ratio must be a number between 0 and 1, given -0.1"
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
@@ -239,7 +238,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.invalid-efficiency-ratio-negative.outputs.error }}"
-          expected_message='lowest-efficiency-ratio must be a number between 0 and 1, given "-0.1"'
+          expected_message="lowest-efficiency-ratio must be a number between 0 and 1, given -0.1"
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
@@ -266,7 +265,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.invalid-wasted-ratio-nan.outputs.error }}"
-          expected_message='highest-user-wasted-ratio must be a number between 0 and 1, given "abc"'
+          expected_message="highest-user-wasted-ratio must be a number between 0 and 1, given abc"
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
@@ -293,7 +292,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.invalid-efficiency-ratio-nan.outputs.error }}"
-          expected_message='lowest-efficiency-ratio must be a number between 0 and 1, given "abc"'
+          expected_message="lowest-efficiency-ratio must be a number between 0 and 1, given abc"
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
@@ -355,7 +354,7 @@ jobs:
         shell: bash
         run: |
           error_message="${{ steps.always-comment-missing-github-token.outputs.error }}"
-          expected_message='always-comment parameter requires github-token to be set.'
+          expected_message="always-comment parameter requires github-token to be set."
 
           if [[ ! "$error_message" =~ "$expected_message" ]]; then
             echo "Expected error message to contain: $expected_message"
