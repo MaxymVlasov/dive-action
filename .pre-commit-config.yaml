@@ -11,7 +11,7 @@ exclude: |
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       # Git style
       - id: check-added-large-files
@@ -68,7 +68,7 @@ repos:
 
   # JSON5 Linter
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
+    rev: f12edd9c7be1c20cfa42420fd0e6df71e42b51ea  # frozen: v4.0.0-alpha.8
     hooks:
       - id: prettier
         # https://prettier.io/docs/en/options.html#parser
@@ -78,7 +78,7 @@ repos:
   # YAML Linters
   #
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
-    rev: 0.2.3
+    rev: 8d1b9cadaf854cb25bb0b0f5870e1cc66a083d6b  # frozen: 0.2.3
     hooks:
       - id: yamlfmt
         args:
@@ -89,7 +89,7 @@ repos:
           - --implicit_start
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.35.1
+    rev: 79a6b2b1392eaf49cdd32ac4f14be1a809bbd8f7  # frozen: v1.37.1
     hooks:
       - id: yamllint
         types:
@@ -99,7 +99,7 @@ repos:
           - --strict
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.31.0
+    rev: 83987cd6ad8943c7f029b500b14aaf82c00a01fa  # frozen: 0.34.0
     hooks:
       - id: check-jsonschema
         name: Validate Coderabbit AI settings
