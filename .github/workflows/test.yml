@@ -349,7 +349,7 @@ jobs:
         run: |
           error_message="${{ steps.invalid-dive-registry.outputs.error }}"
           expected_message='Invalid dive-image-registry format. Expected format: '
-          expected_message+='[repository/]<image>[:tag], e.g., myrepo/myimage:v1.0.0. '
+          expected_message+='[registry]/repository/image, e.g., ghcr.io/myrepo/myimage. '
           expected_message+='Allowed characters: alphanumeric, ., -, _, /.'
 
 

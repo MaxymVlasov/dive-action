@@ -132,7 +132,7 @@ function validateInputs(alwaysCommentInput, highestUserWastedRatio, lowestEffici
     // Validate Docker image name format
     if (!/^[\w.\-_/]+$/.test(diveRepo)) {
         error('Invalid dive-image-registry format. ' +
-            'Expected format: "[repository/]<image>[:tag]", e.g., "myrepo/myimage:v1.0.0". ' +
+            'Expected format: "[registry]/repository/image", e.g., "ghcr.io/myrepo/myimage". ' +
             'Allowed characters: alphanumeric, ".", "-", "_", "/".');
     }
 }
