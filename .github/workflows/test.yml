@@ -492,7 +492,7 @@ jobs:
         if: github.ref != 'refs/heads/main'
         uses: ./
         with:
-          image: ${{ env.WASTED_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: '[Verification] Params: collapse-inefficient-files-details enabled'
@@ -541,8 +541,9 @@ jobs:
         if: github.ref != 'refs/heads/main'
         uses: ./
         with:
-          image: ${{ env.WASTED_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          always-comment: true
           collapse-inefficient-files-details: false
 
       - name: '[Verification] Params: collapse-inefficient-files-details disabled'
