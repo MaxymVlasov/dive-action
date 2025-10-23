@@ -61,7 +61,7 @@ jobs:
       - name: Build image
         run: docker build -t sample:latest .
       - name: Dive
-        uses: MaxymVlasov/dive-action@v1.5.1
+        uses: MaxymVlasov/dive-action@v1.6.0
         with:
           image: sample:latest
           github-token: ${{ secrets.GITHUB_TOKEN }}
