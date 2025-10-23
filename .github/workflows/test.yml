@@ -508,7 +508,8 @@ jobs:
 
           # Check if the comment exists and contains the details tag
           comment_body=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
-          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Inefficient Files")) | .body')
+          'sort_by(.created_at) | reverse | .[0] | select(
+            .body | contains("Inefficient Files")) | .body')
 
           if [ -z "$comment_body" ]; then
             echo "Expected comment not found in PR"
@@ -533,7 +534,8 @@ jobs:
 
           # Get the comment ID and delete it
           comment_id=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
-          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Inefficient Files")) | .id')
+          'sort_by(.created_at) | reverse | .[0] | select(
+            .body | contains("Inefficient Files")) | .id')
           gh api -X DELETE "repos/${{ github.repository }}/issues/comments/${comment_id}"
           echo "Comment deleted"
 
@@ -559,7 +561,8 @@ jobs:
 
           # Check if the comment exists
           comment_body=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
-          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Inefficient Files")) | .body')
+          'sort_by(.created_at) | reverse | .[0] | select(
+            .body | contains("Inefficient Files")) | .body')
 
           if [ -z "$comment_body" ]; then
             echo "Expected comment not found in PR"
@@ -574,6 +577,7 @@ jobs:
 
           # Get the comment ID and delete it
           comment_id=$(gh api "repos/${{ github.repository }}/issues/${pr_number}/comments" --jq \
-          'sort_by(.created_at) | reverse | .[0] | select(.body | contains("Inefficient Files")) | .id')
+          'sort_by(.created_at) | reverse | .[0] | select(
+            .body | contains("Inefficient Files")) | .id')
           gh api -X DELETE "repos/${{ github.repository }}/issues/comments/${comment_id}"
           echo "Comment deleted"
