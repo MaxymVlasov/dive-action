@@ -56,7 +56,7 @@ function formatTableRow(line) {
     const filePath = line.slice(21);
     return `| ${count} | ${wastedSpace} | ${filePath} |`;
 }
-function composeComment(diveOutput, customLeadingComment, collapseInefficient = false) {
+function composeComment(diveOutput, customLeadingComment, collapseInefficient) {
     const ret = customLeadingComment;
     let summarySection = false;
     let inefficientFilesSection = false;
@@ -86,9 +86,8 @@ function composeComment(diveOutput, customLeadingComment, collapseInefficient = 
             case line.includes('Results:'):
                 if (inefficientFilesSection && collapseInefficient) {
                     ret.push(...inefficientFilesContent);
-                    ret.push('');
-                    ret.push('');
                     ret.push('</details>');
+                    ret.push('');
                 }
                 else if (inefficientFilesSection) {
                     ret.push(...inefficientFilesContent);
@@ -255,7 +254,10 @@ async function run() {
             error(`Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
                 'a PR comment, please provide the github-token in the action inputs.');
         }
-        await postComment(ghToken, diveOutput, collapseInefficient, ['> [!WARNING]', '> The container image has inefficient files.']);
+        await postComment(ghToken, diveOutput, collapseInefficient, [
+            '> [!WARNING]',
+            '> The container image has inefficient files.'
+        ]);
         error(scanFailedErrorMsg);
     }
     catch (e) {
