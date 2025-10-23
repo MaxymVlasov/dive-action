@@ -16,7 +16,7 @@ function formatTableRow(line: string): string {
 function composeComment(
   diveOutput: string,
   customLeadingComment: string[],
-  collapseInefficient = false
+  collapseInefficient: boolean
 ): string {
   const ret = customLeadingComment
   let summarySection = false
