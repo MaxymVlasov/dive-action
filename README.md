@@ -107,9 +107,6 @@ created.
 | collapse-inefficient-files-details | Boolean | false | `true` |  Collapse the inefficient files table in PR comments using details/summary tags. <br> <details><summary>Set to `false` to expand it by default</summary> ![PR comment](docs/pr-comment-expanded.png) </details>|
 | github-token   | String  | false    |         | GitHub token to post PR comment with dive analysis                                                                                                                                   |
 
-
-
-
 #### Used dive image
 
 | Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type   | Required | Default | Description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
