@@ -20,6 +20,11 @@ inputs:
       issues are detected. Requires `github-token`
     required: false
     default: 'false'
+  collapse-inefficient-files-details:
+    description: Collapse the inefficient files table in PR comments using details/summary
+      tags
+    required: false
+    default: 'true'
   github-token:
     description: GitHub token to post PR comment with dive analysis
     required: false
