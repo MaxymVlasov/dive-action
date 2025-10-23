@@ -87,6 +87,7 @@ function composeComment(diveOutput, customLeadingComment, collapseInefficient = 
                 if (inefficientFilesSection && collapseInefficient) {
                     ret.push(...inefficientFilesContent);
                     ret.push('');
+                    ret.push('');
                     ret.push('</details>');
                 }
                 else if (inefficientFilesSection) {
@@ -115,7 +116,7 @@ function composeComment(diveOutput, customLeadingComment, collapseInefficient = 
     }
     return ret.join('\n');
 }
-async function postComment(ghToken, diveOutput, customLeadingComment = [], collapseInefficient = false) {
+async function postComment(ghToken, diveOutput, collapseInefficient, customLeadingComment = []) {
     const octokit = github.getOctokit(ghToken);
     const comment = {
         ...github.context.issue,
@@ -190,9 +191,9 @@ async function run() {
             .toLowerCase();
         const ghToken = core.getInput('github-token');
         validateInputs(alwaysCommentInput, highestUserWastedRatio, lowestEfficiencyRatio, diveRepo, collapseInefficientInput);
+        const collapseInefficient = collapseInefficientInput === 'true';
         // Convert always-comment input to boolean value.
         const alwaysComment = alwaysCommentInput === 'true';
-        const collapseInefficient = collapseInefficientInput === 'true';
         if (alwaysComment && !ghToken) {
             error('"always-comment" parameter requires "github-token" to be set.');
         }
@@ -243,7 +244,7 @@ async function run() {
         const exitCode = await exec.exec('docker', parameters, execOptions);
         const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`;
         if (alwaysComment) {
-            await postComment(ghToken, diveOutput, [], collapseInefficient);
+            await postComment(ghToken, diveOutput, collapseInefficient);
             if (exitCode === 0)
                 return;
             error(scanFailedErrorMsg);
@@ -254,7 +255,7 @@ async function run() {
             error(`Scan failed (exit code: ${exitCode}).\nTo post scan results as ` +
                 'a PR comment, please provide the github-token in the action inputs.');
         }
-        await postComment(ghToken, diveOutput, ['> [!WARNING]', '> The container image has inefficient files.'], collapseInefficient);
+        await postComment(ghToken, diveOutput, collapseInefficient, ['> [!WARNING]', '> The container image has inefficient files.']);
         error(scanFailedErrorMsg);
     }
     catch (e) {

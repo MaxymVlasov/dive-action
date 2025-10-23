@@ -50,6 +50,7 @@ function composeComment(
         if (inefficientFilesSection && collapseInefficient) {
           ret.push(...inefficientFilesContent)
           ret.push('')
+          ret.push('')
           ret.push('</details>')
         } else if (inefficientFilesSection) {
           ret.push(...inefficientFilesContent)
@@ -84,8 +85,8 @@ function composeComment(
 async function postComment(
   ghToken: string,
   diveOutput: string,
-  customLeadingComment: string[] = [],
-  collapseInefficient = false
+  collapseInefficient: boolean,
+  customLeadingComment: string[] = []
 ): Promise<void> {
   const octokit = github.getOctokit(ghToken)
   const comment = {
@@ -195,9 +196,9 @@ async function run(): Promise<void> {
       diveRepo,
       collapseInefficientInput
     )
+    const collapseInefficient = collapseInefficientInput === 'true'
     // Convert always-comment input to boolean value.
     const alwaysComment = alwaysCommentInput === 'true'
-    const collapseInefficient = collapseInefficientInput === 'true'
     if (alwaysComment && !ghToken) {
       error('"always-comment" parameter requires "github-token" to be set.')
     }
@@ -262,7 +263,7 @@ async function run(): Promise<void> {
     const scanFailedErrorMsg = `Scan failed (exit code: ${exitCode})`
 
     if (alwaysComment) {
-      await postComment(ghToken, diveOutput, [], collapseInefficient)
+      await postComment(ghToken, diveOutput, collapseInefficient)
 
       if (exitCode === 0) return
 
@@ -277,12 +278,10 @@ async function run(): Promise<void> {
           'a PR comment, please provide the github-token in the action inputs.'
       )
     }
-    await postComment(
-      ghToken,
-      diveOutput,
-      ['> [!WARNING]', '> The container image has inefficient files.'],
-      collapseInefficient
-    )
+    await postComment(ghToken, diveOutput, collapseInefficient, [
+      '> [!WARNING]',
+      '> The container image has inefficient files.'
+    ])
 
     error(scanFailedErrorMsg)
   } catch (e) {
