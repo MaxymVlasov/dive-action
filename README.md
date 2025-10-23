@@ -104,8 +104,11 @@ created.
 | Name           | Type    | Required | Default | Description                                                                                                                                                                          |
 | -------------- | ------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | always-comment | Boolean | false    | `false` | Post dive analysis results as PR comment regardless of whether any inefficiencies were found. By default, comments are only posted when issues are detected. Requires `github-token` |
-| collapse-inefficient-files-details | Boolean | false | `true` | Collapse the inefficient files table in PR comments using details/summary tags |
+| collapse-inefficient-files-details | Boolean | false | `true` |  Collapse the inefficient files table in PR comments using details/summary tags. <br> <details><summary>Set to `false` to expand it by default</summary> ![PR comment](docs/pr-comment-expanded.png) </details>|
 | github-token   | String  | false    |         | GitHub token to post PR comment with dive analysis                                                                                                                                   |
+
+
+
 
 #### Used dive image
 
