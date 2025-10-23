@@ -488,11 +488,12 @@ jobs:
           echo "Comment deleted"
 
       # Test collapse-inefficient-files-details feature enabled
-      - name: 'Params: collapse-inefficient-files-details with github-token'
+      - name: 'Params: collapse-inefficient-files-details'
         if: github.ref != 'refs/heads/main'
         uses: ./
         with:
           image: ${{ env.TEST_IMAGE }}
+          always-comment: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: '[Verification] Params: collapse-inefficient-files-details enabled'
