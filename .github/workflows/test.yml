@@ -391,7 +391,8 @@ jobs:
           fi
 
       # Test for invalid collapse-inefficient-files-details value
-      - name: '[Run] Negative test: Invalid collapse-inefficient-files-details value'
+      - name: '[Run] Negative test: Invalid collapse-inefficient-files-details
+          value'
         id: invalid-collapse-inefficient
         if: always() && steps.pre-setup.outcome == 'success'
         continue-on-error: true
@@ -400,7 +401,8 @@ jobs:
           image: ${{ env.TEST_IMAGE }}
           collapse-inefficient-files-details: maybe
 
-      - name: '[Verification] Negative test: Invalid collapse-inefficient-files-details value'
+      - name: '[Verification] Negative test: Invalid collapse-inefficient-files-details
+          value'
         if: always() && steps.pre-setup.outcome == 'success'
         shell: bash
         run: |

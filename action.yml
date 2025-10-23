@@ -21,7 +21,8 @@ inputs:
     required: false
     default: 'false'
   collapse-inefficient-files-details:
-    description: Collapse the inefficient files table in PR comments using details/summary tags
+    description: Collapse the inefficient files table in PR comments using details/summary
+      tags
     required: false
     default: 'false'
   github-token:
