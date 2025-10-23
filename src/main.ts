@@ -49,9 +49,8 @@ function composeComment(
       case line.includes('Results:'):
         if (inefficientFilesSection && collapseInefficient) {
           ret.push(...inefficientFilesContent)
-          ret.push('')
-          ret.push('')
           ret.push('</details>')
+          ret.push('')
         } else if (inefficientFilesSection) {
           ret.push(...inefficientFilesContent)
         }
