@@ -494,7 +494,6 @@ jobs:
         with:
           image: ${{ env.WASTED_IMAGE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          collapse-inefficient-files-details: true
 
       - name: '[Verification] Params: collapse-inefficient-files-details enabled'
         if: github.ref != 'refs/heads/main'
@@ -537,13 +536,14 @@ jobs:
           gh api -X DELETE "repos/${{ github.repository }}/issues/comments/${comment_id}"
           echo "Comment deleted"
 
-      # Test collapse-inefficient-files-details feature disabled (default)
-      - name: 'Params: collapse-inefficient-files-details disabled (default)'
+      # Test collapse-inefficient-files-details feature disabled
+      - name: 'Params: collapse-inefficient-files-details disabled'
         if: github.ref != 'refs/heads/main'
         uses: ./
         with:
           image: ${{ env.WASTED_IMAGE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          collapse-inefficient-files-details: false
 
       - name: '[Verification] Params: collapse-inefficient-files-details disabled'
         if: github.ref != 'refs/heads/main'
