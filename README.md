@@ -2,7 +2,7 @@
 
 [![GitHub Marketplace][marketplace-badge]](https://github.com/marketplace/actions/dive-action-v2)
 [![Release][release-badge]](https://github.com/MaxymVlasov/dive-action/releases/latest)  
-![Maintenance status](https://img.shields.io/maintenance/yes/2025.svg)
+![Maintenance status](https://img.shields.io/maintenance/yes/2026.svg)
 [![OpenSSF Scorecard Badge]](https://scorecard.dev/viewer/?uri=github.com/MaxymVlasov/dive-action)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10053/badge)](https://www.bestpractices.dev/projects/10053)  
 [![Stand With Ukraine]](https://stand-with-ukraine.pp.ua)
