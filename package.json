@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/MaxymVlasov/dive-action#readme",
   "dependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^2.0.0",
     "@actions/exec": "^1.1.1",
     "@actions/github": "^8.0.0",
     "strip-ansi": "^7.1.0"
