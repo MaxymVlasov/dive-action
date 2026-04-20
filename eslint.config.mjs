@@ -80,6 +80,6 @@ export default [{
         "@typescript-eslint/restrict-plus-operands": "error",
         semi: ["error", "never"],
         "@typescript-eslint/unbound-method": "error",
-        "filenames/match-regex": ['off'], // FIXME: It not shown where violations are, if any
+        "github/filenames-match-regex": ['off'], // FIXME: It not shown where violations are, if any
     },
 }];
