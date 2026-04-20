@@ -8,7 +8,7 @@
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "package": "esbuild src/main.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist/index.js --sourcemap && node scripts/postprocess-dist.mjs",
+    "package": "esbuild src/main.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist/index.js --sourcemap && license-checker-rseidelsohn --production --plainVertical --out dist/licenses.txt && node scripts/postprocess-dist.mjs",
     "test": "jest",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
   },
@@ -54,6 +54,7 @@
     "jest": "^30.3.0",
     "jest-circus": "^30.3.0",
     "js-yaml": "^4.1.1",
+    "license-checker-rseidelsohn": "^4.4.2",
     "prettier": "^3.8.3",
     "ts-jest": "^29.4.9",
     "typescript": "^6.0.3"
