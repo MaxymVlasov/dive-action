@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5.0.0
         with:
           node-version: 24
-      - run: npm install
+      - run: npm ci
       - run: npm run all
 
   test:  # make sure the action works on a clean machine without building
