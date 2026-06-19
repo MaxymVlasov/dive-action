@@ -1,4 +1,4 @@
-@actions/core 3.0.0
+@actions/core 3.0.1
 MIT
 The MIT License (MIT)
 
@@ -59,7 +59,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-@actions/http-client 4.0.0
+@actions/http-client 4.0.1
 MIT
 Actions Http Client for Node.js
 
