@@ -24,9 +24,9 @@ Under the hood, the [dive](https://github.com/wagoodman/dive) tool inspects imag
 
 * [Usage](#usage)
   * [Workflow](#workflow)
-  * [Multi-architecture images](`#multi-architecture-multi-platform-images`)
   * [Inputs](#inputs)
     * [Required](#required)
+      * [Multi-architecture (multi-platform) images](#multi-architecture-multi-platform-images)
     * [PR comments](#pr-comments)
     * [Used dive image](#used-dive-image)
     * [Dive configs](#dive-configs)
@@ -98,7 +98,31 @@ created.
 
 | Name  | Type   | Required | Default | Description      |
 | ----- | ------ | -------- | ------- | ---------------- |
-| image | String | true     |         | Image to analyze. Must reference a single-platform image. For multi-architecture (buildx) images, see [Multi-architecture images](`#multi-architecture-multi-platform-images`) below. |
+| image | String | true     |         | Image to analyze. Must reference a single-platform image. For multi-architecture (buildx) images, see [Multi-architecture images](#multi-architecture-multi-platform-images) below. |
+
+##### Multi-architecture (multi-platform) images
+
+When building images with `docker buildx build --platform linux/amd64,linux/arm64 --push`,
+the result is an OCI image index (manifest list) rather than a single-platform image
+manifest. The `image` input requires a single-platform image, so passing a manifest list
+will produce confusing results.
+
+To analyze a specific platform from a multi-arch build, pull the image for the target
+platform before running dive:
+
+```yaml
+- name: Build multi-platform image
+  run: docker buildx build --platform linux/amd64,linux/arm64 --push -t myrepo/myapp:latest .
+
+- name: Pull image for target platform
+  run: docker pull --platform linux/amd64 myrepo/myapp:latest
+
+- name: Dive
+  uses: MaxymVlasov/dive-action@v1.6.0
+  with:
+    image: myrepo/myapp:latest
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+```
 
 #### PR comments
 
@@ -153,29 +177,7 @@ rules:
   highestUserWastedPercent: 0.20
 ```
 
-### Multi-architecture (multi-platform) images
 
-When building images with `docker buildx build --platform linux/amd64,linux/arm64 --push`,
-the result is an OCI image index (manifest list) rather than a single-platform image
-manifest. The `image` input requires a single-platform image, so passing a manifest list
-will produce confusing results.
-
-To analyze a specific platform from a multi-arch build, pull the image for the target
-platform before running dive:
-
-```yaml
-- name: Build multi-platform image
-  run: docker buildx build --platform linux/amd64,linux/arm64 --push -t myrepo/myapp:latest .
-
-- name: Pull image for target platform
-  run: docker pull --platform linux/amd64 myrepo/myapp:latest
-
-- name: Dive
-  uses: MaxymVlasov/dive-action@v1.6.0
-  with:
-    image: myrepo/myapp:latest
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-```
 
 ### Output
 
