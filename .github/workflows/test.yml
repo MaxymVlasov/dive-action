@@ -458,9 +458,13 @@ jobs:
       # Runs at the end and only when all other tests pass, as it posts the
       # results as a comment on the PR
       - name: 'Params: always-comment with github-token'
-        # It will not be able to create comment outside PR. result in main branch:
-        # Not Found - https://docs.github.com/rest
-        if: github.ref != 'refs/heads/main'
+        id: always-comment-with-github-token
+        # Requires write access to post PR comments.
+        # Forks run with a read-only GITHUB_TOKEN and cannot write to the
+        # upstream repo, so this step is skipped for fork PRs.
+        if: >-
+          github.ref != 'refs/heads/main' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: ./
         with:
           image: ${{ env.TEST_IMAGE }}
@@ -468,7 +472,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: '[Verification] Params: always-comment with github-token'
-        if: github.ref != 'refs/heads/main'
+        if: steps.always-comment-with-github-token.outcome != 'skipped'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -493,7 +497,10 @@ jobs:
 
       # Test collapse-inefficient-files-details feature enabled
       - name: 'Params: collapse-inefficient-files-details'
-        if: github.ref != 'refs/heads/main'
+        id: collapse-inefficient-enabled
+        if: >-
+          github.ref != 'refs/heads/main' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: ./
         with:
           image: ${{ env.TEST_IMAGE }}
@@ -501,7 +508,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: '[Verification] Params: collapse-inefficient-files-details enabled'
-        if: github.ref != 'refs/heads/main'
+        if: steps.collapse-inefficient-enabled.outcome != 'skipped'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -545,7 +552,10 @@ jobs:
 
       # Test collapse-inefficient-files-details feature disabled
       - name: 'Params: collapse-inefficient-files-details disabled'
-        if: github.ref != 'refs/heads/main'
+        id: collapse-inefficient-disabled
+        if: >-
+          github.ref != 'refs/heads/main' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: ./
         with:
           image: ${{ env.TEST_IMAGE }}
@@ -554,7 +564,7 @@ jobs:
           collapse-inefficient-files-details: false
 
       - name: '[Verification] Params: collapse-inefficient-files-details disabled'
-        if: github.ref != 'refs/heads/main'
+        if: steps.collapse-inefficient-disabled.outcome != 'skipped'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
