@@ -24,7 +24,7 @@ Under the hood, the [dive](https://github.com/wagoodman/dive) tool inspects imag
 
 * [Usage](#usage)
   * [Workflow](#workflow)
-  * [Multi-architecture images](#multi-architecture-images)
+  * [Multi-architecture images](`#multi-architecture-multi-platform-images`)
   * [Inputs](#inputs)
     * [Required](#required)
     * [PR comments](#pr-comments)
@@ -98,7 +98,7 @@ created.
 
 | Name  | Type   | Required | Default | Description      |
 | ----- | ------ | -------- | ------- | ---------------- |
-| image | String | true     |         | Image to analyze. Must reference a single-platform image. For multi-architecture (buildx) images, see [Multi-architecture images](#multi-architecture-images) below. |
+| image | String | true     |         | Image to analyze. Must reference a single-platform image. For multi-architecture (buildx) images, see [Multi-architecture images](`#multi-architecture-multi-platform-images`) below. |
 
 #### PR comments
 
