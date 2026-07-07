@@ -177,8 +177,6 @@ rules:
   highestUserWastedPercent: 0.20
 ```
 
-
-
 ### Output
 
 ```txt
