@@ -99,7 +99,7 @@ repos:
           - --strict
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: ed81924a8b1cecdaa570b072528fa80c9c4d6ccd  # frozen: 0.37.1
+    rev: 1a4bb160cab6417b3045e1b37b6b72449243e658  # frozen: 0.37.4
     hooks:
       - id: check-jsonschema
         name: Validate Coderabbit AI settings
